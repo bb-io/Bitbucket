@@ -1,5 +1,6 @@
 using Apps.Bitbucket.Models.Identifiers.Optional;
 using Apps.Bitbucket.Models.Pagination.User;
+using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Invocation;
@@ -11,7 +12,9 @@ public class UserDataHandler : BitbucketInvocable, IAsyncDataSourceItemHandler
 {
     private readonly string _workspaceUuid;
     
-    public UserDataHandler(InvocationContext invocationContext, OptionalWorkspaceIdentifier workspaceIdentifier) 
+    public UserDataHandler(
+        InvocationContext invocationContext, 
+        [ActionParameter] OptionalWorkspaceIdentifier workspaceIdentifier) 
         : base(invocationContext)
     {
         if (string.IsNullOrWhiteSpace(workspaceIdentifier.WorkspaceUuid))
