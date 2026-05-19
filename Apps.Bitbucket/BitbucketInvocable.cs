@@ -1,17 +1,18 @@
-using Apps.Appname.Api;
+using Apps.Bitbucket.Api;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Invocation;
 
-namespace Apps.Appname;
+namespace Apps.Bitbucket;
 
-public class Invocable : BaseInvocable
+public class BitbucketInvocable : BaseInvocable
 {
     protected AuthenticationCredentialsProvider[] Creds =>
         InvocationContext.AuthenticationCredentialsProviders.ToArray();
 
-    protected Client Client { get; }
-    public Invocable(InvocationContext invocationContext) : base(invocationContext)
+    protected BitbucketClient Client { get; }
+    
+    public BitbucketInvocable(InvocationContext invocationContext) : base(invocationContext)
     {
         Client = new(Creds);
     }

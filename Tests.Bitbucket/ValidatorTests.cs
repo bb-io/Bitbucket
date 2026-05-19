@@ -1,8 +1,8 @@
-using Apps.Appname.Connections;
+using Apps.Bitbucket.Connections;
 using Blackbird.Applications.Sdk.Common.Authentication;
-using Tests.Appname.Base;
+using Tests.Bitbucket.Base;
 
-namespace Tests.Appname;
+namespace Tests.Bitbucket;
 
 [TestClass]
 public class ConnectionValidatorTests : TestBase

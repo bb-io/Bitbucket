@@ -1,7 +1,7 @@
-﻿using Apps.Appname.Actions;
-using Tests.Appname.Base;
+﻿using Apps.Bitbucket.Actions;
+using Tests.Bitbucket.Base;
 
-namespace Tests.Appname;
+namespace Tests.Bitbucket;
 
 [TestClass]
 public class ActionTests : TestBase
