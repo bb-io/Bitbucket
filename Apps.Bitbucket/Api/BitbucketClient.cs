@@ -1,23 +1,18 @@
-using Apps.Bitbucket.Constants;
+using Apps.Bitbucket.Authenticators;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Exceptions;
-using Blackbird.Applications.Sdk.Utils.Extensions.Sdk;
 using Blackbird.Applications.Sdk.Utils.RestSharp;
 using Newtonsoft.Json;
 using RestSharp;
 
 namespace Apps.Bitbucket.Api;
 
-public class BitbucketClient : BlackBirdRestClient
+public class BitbucketClient(IEnumerable<AuthenticationCredentialsProvider> creds) : BlackBirdRestClient(new()
 {
-    public BitbucketClient(IEnumerable<AuthenticationCredentialsProvider> creds) : base(new()
-    {
-        BaseUrl = new Uri(""),
-    })
-    {
-        this.AddDefaultHeader("Authorization", creds.Get(CredsNames.Token).Value);
-    }
-
+    BaseUrl = new Uri("https://api.bitbucket.org/2.0/"),
+    Authenticator = new ApiTokenAuthenticator(creds),
+})
+{
     protected override Exception ConfigureErrorException(RestResponse response)
     {
         var error = JsonConvert.DeserializeObject(response.Content);

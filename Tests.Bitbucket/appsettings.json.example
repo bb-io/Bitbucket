@@ -1,6 +1,7 @@
 {
   "ConnectionDefinition": {
-    "token": ""
+    "Username": "your_account_email",
+    "ApiToken": ""
   },
   "TestFolder": "TestFiles"
 }

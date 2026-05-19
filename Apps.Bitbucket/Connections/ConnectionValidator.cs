@@ -16,13 +16,10 @@ public class ConnectionValidator(InvocationContext invocationContext) : BaseInvo
         try
         {
             var client = new BitbucketClient(authenticationCredentialsProviders);
-            var request = new RestRequest();
-
+            var request = new RestRequest("user");
             var response = await client.ExecuteAsync(request, cancellationToken);
 
-            // Typically you'll want to use the least complex way to validate if a connection is valid.
             var isValid = response.StatusCode != System.Net.HttpStatusCode.Unauthorized;
-
             return new ConnectionValidationResponse
             {
                 IsValid = isValid,
