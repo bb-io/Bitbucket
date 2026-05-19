@@ -1,4 +1,5 @@
 ﻿using Apps.Bitbucket.Handlers;
+using Apps.Bitbucket.Models.Identifiers.Optional;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Tests.Bitbucket.Base;
 
@@ -8,18 +9,31 @@ namespace Tests.Bitbucket;
 public class HandlerTests : TestBase
 {
     [TestMethod]
-    public async Task Dynamic_handler_works()
+    public async Task WorkspaceDataHandler_ReturnsWorkspacesForCurrentUser()
     {
-        var handler = new DynamicHandler(InvocationContext);
+        // Arrange
+        var handler = new WorkspaceDataHandler(InvocationContext);
 
+        // Act
         var result = await handler.GetDataAsync(new DataSourceContext { }, CancellationToken.None);
 
-        Console.WriteLine($"Total: {result.Count()}");
-        foreach (var item in result)
-        {
-            Console.WriteLine($"{item.Value}: {item.DisplayName}");
-        }
+        // Assert
+        PrintDataHandlerResult(result);
+        Assert.IsNotNull(result);
+    }
 
-        Assert.IsTrue(result.Count() > 0);
+    [TestMethod]
+    public async Task UserDataHandler_ReturnsUsers()
+    {
+        // Arrange
+        var workspaceId = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
+        var handler = new UserDataHandler(InvocationContext, workspaceId);
+
+        // Act
+        var result = await handler.GetDataAsync(new DataSourceContext { }, CancellationToken.None);
+
+        // Assert
+        PrintDataHandlerResult(result);
+        Assert.IsNotNull(result);
     }
 }

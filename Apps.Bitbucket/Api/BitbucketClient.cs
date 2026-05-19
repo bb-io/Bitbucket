@@ -1,4 +1,5 @@
 using Apps.Bitbucket.Authenticators;
+using Apps.Bitbucket.Models.Pagination;
 using Apps.Bitbucket.Models.Utility.Error;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Exceptions;
@@ -30,5 +31,11 @@ public class BitbucketClient(IEnumerable<AuthenticationCredentialsProvider> cred
             errorMessage = $"{errorObject.Detail} - {errorMessage}";
 
         throw new PluginApplicationException($"{statusCodePart} {errorMessage}");
+    }
+
+    public async Task<IEnumerable<T>> PaginateOnce<T>(RestRequest request)
+    {
+        var result = await ExecuteWithErrorHandling<PaginationResponse<T>>(request);
+        return result.Values;
     }
 }
