@@ -13,7 +13,10 @@ public class WorkspaceDataHandler(InvocationContext invocationContext)
     public async Task<IEnumerable<DataSourceItem>> GetDataAsync(DataSourceContext context, CancellationToken ct)
     {
         var request = new BitbucketCloudRequest("user/workspaces")
-            .AddQueryParameterIfNotNull("sort", context.SearchString);
+            .AddBitbucketQuery(q =>
+            {
+                q.Contains("slug", context.SearchString);
+            });
         var result = await Client.PaginateOnce<WorkspacePaginationEntity>(request);
         return result.Select(x => new DataSourceItem(x.WorkspaceEntity.Uuid, x.WorkspaceEntity.Slug)).ToList();
     }

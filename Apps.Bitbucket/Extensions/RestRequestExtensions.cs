@@ -1,14 +1,19 @@
+using Apps.Bitbucket.Helper;
 using RestSharp;
 
 namespace Apps.Bitbucket.Extensions;
 
 public static class RestRequestExtensions
 {
-    public static RestRequest AddQueryParameterIfNotNull(this RestRequest request, string paramName, string? paramValue)
+    public static T AddBitbucketQuery<T>(this T request, Action<CloudQueryBuilder> configureQuery) 
+        where T : RestRequest
     {
-        if (string.IsNullOrWhiteSpace(paramName) || string.IsNullOrWhiteSpace(paramValue))
-            return request;
+        var builder = new CloudQueryBuilder();
+        configureQuery(builder);
 
-        return request.AddQueryParameter(paramName, paramValue);
+        if (builder.HasConditions)
+            request.AddQueryParameter("q", builder.ToString());
+
+        return request;
     }
 }
