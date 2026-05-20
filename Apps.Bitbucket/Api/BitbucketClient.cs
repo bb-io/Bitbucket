@@ -11,7 +11,7 @@ namespace Apps.Bitbucket.Api;
 
 public class BitbucketClient(IEnumerable<AuthenticationCredentialsProvider> creds) : BlackBirdRestClient(new()
 {
-    BaseUrl = new Uri("https://api.bitbucket.org/2.0/"),
+    BaseUrl = new Uri("https://api.bitbucket.org/"),
     Authenticator = new ApiTokenAuthenticator(creds),
 })
 {

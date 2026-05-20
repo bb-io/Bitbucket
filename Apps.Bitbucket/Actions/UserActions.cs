@@ -1,3 +1,4 @@
+using Apps.Bitbucket.Api.Request;
 using Apps.Bitbucket.Models.Entities.User;
 using Apps.Bitbucket.Models.Identifiers;
 using Apps.Bitbucket.Models.Identifiers.Optional;
@@ -16,7 +17,7 @@ public class UserActions(InvocationContext invocationContext) : BitbucketInvocab
     [Action("Get my user", Description = "Get information of my user")]
     public async Task<UserResponse> GetMyUser()
     {
-        var request = new RestRequest("user");
+        var request = new BitbucketCloudRequest("user");
         var userEntity = await Client.ExecuteWithErrorHandling<UserEntity>(request);
         return new(userEntity);
     }
@@ -28,7 +29,7 @@ public class UserActions(InvocationContext invocationContext) : BitbucketInvocab
         [ActionParameter] OptionalWorkspaceIdentifier workspaceIdentifier   // For the user data handler to work
         )
     {
-        var request = new RestRequest($"users/{userIdentifier.UserUuid}");
+        var request = new BitbucketCloudRequest($"users/{userIdentifier.UserUuid}");
         var userEntity = await Client.ExecuteWithErrorHandling<UserEntity>(request);
         return new(userEntity);
     }

@@ -1,9 +1,9 @@
 ﻿using Apps.Bitbucket.Api;
+using Apps.Bitbucket.Api.Request;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Connections;
 using Blackbird.Applications.Sdk.Common.Invocation;
-using RestSharp;
 
 namespace Apps.Bitbucket.Connections;
 
@@ -16,7 +16,7 @@ public class ConnectionValidator(InvocationContext invocationContext) : BaseInvo
         try
         {
             var client = new BitbucketClient(authenticationCredentialsProviders);
-            var request = new RestRequest("user");
+            var request = new BitbucketCloudRequest("user");
             var response = await client.ExecuteAsync(request, cancellationToken);
 
             var isValid = response.StatusCode != System.Net.HttpStatusCode.Unauthorized;

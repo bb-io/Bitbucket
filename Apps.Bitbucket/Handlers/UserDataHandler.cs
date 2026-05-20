@@ -1,3 +1,4 @@
+using Apps.Bitbucket.Api.Request;
 using Apps.Bitbucket.Models.Identifiers.Optional;
 using Apps.Bitbucket.Models.Pagination.User;
 using Blackbird.Applications.Sdk.Common;
@@ -26,7 +27,7 @@ public class UserDataHandler : BitbucketInvocable, IAsyncDataSourceItemHandler
     // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-workspaces/#api-workspaces-workspace-members-get
     public async Task<IEnumerable<DataSourceItem>> GetDataAsync(DataSourceContext context, CancellationToken ct)
     {
-        var request = new RestRequest($"workspaces/{_workspaceUuid}/members");
+        var request = new BitbucketCloudRequest($"workspaces/{_workspaceUuid}/members");
         
         if (!string.IsNullOrWhiteSpace(context.SearchString))
             request.AddQueryParameter("q", $"user.display_name~\"{context.SearchString}\"");
