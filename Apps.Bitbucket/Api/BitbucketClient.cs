@@ -1,3 +1,4 @@
+using Apps.Bitbucket.Api.Request;
 using Apps.Bitbucket.Authenticators;
 using Apps.Bitbucket.Models.Pagination;
 using Apps.Bitbucket.Models.Utility.Error;
@@ -33,9 +34,26 @@ public class BitbucketClient(IEnumerable<AuthenticationCredentialsProvider> cred
         throw new PluginApplicationException($"{statusCodePart} {errorMessage}");
     }
 
-    public async Task<IEnumerable<T>> PaginateOnce<T>(RestRequest request)
+    public async Task<IEnumerable<T>> PaginateOnce<T>(BitbucketCloudRequest request)
     {
         var result = await ExecuteWithErrorHandling<PaginationResponse<T>>(request);
         return result.Values;
+    }
+
+    public async Task<IEnumerable<T>> Paginate<T>(BitbucketCloudRequest request)
+    {
+        List<T> resultValues = [];
+        PaginationResponse<T> paginationResponse = await ExecuteWithErrorHandling<PaginationResponse<T>>(request);
+        resultValues.AddRange(paginationResponse.Values);
+        
+        while (!string.IsNullOrWhiteSpace(paginationResponse.Next))
+        {
+            var nextRequest = new RestRequest(paginationResponse.Next);
+        
+            paginationResponse = await ExecuteWithErrorHandling<PaginationResponse<T>>(nextRequest);
+            resultValues.AddRange(paginationResponse.Values);
+        }
+
+        return resultValues;
     }
 }
