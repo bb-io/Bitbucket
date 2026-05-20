@@ -1,3 +1,4 @@
+using System.Net;
 using Apps.Bitbucket.Api.Request;
 using Apps.Bitbucket.Authenticators;
 using Apps.Bitbucket.Models.Pagination;
@@ -55,5 +56,17 @@ public class BitbucketClient(IEnumerable<AuthenticationCredentialsProvider> cred
         }
 
         return resultValues;
+    }
+    
+    public async Task<RestResponse> ExecuteWithExpectedStatuses(
+        RestRequest request, 
+        params HttpStatusCode[] expectedStatusCodes)
+    {
+        var response = await ExecuteAsync(request);
+
+        if (response.IsSuccessStatusCode || expectedStatusCodes.Contains(response.StatusCode))
+            return response;
+
+        throw ConfigureErrorException(response);
     }
 }
