@@ -7,13 +7,15 @@ namespace Apps.Bitbucket;
 
 public class BitbucketInvocable : BaseInvocable
 {
-    protected AuthenticationCredentialsProvider[] Creds =>
+    protected AuthenticationCredentialsProvider[] Creds => 
         InvocationContext.AuthenticationCredentialsProviders.ToArray();
 
     protected BitbucketClient Client { get; }
-    
-    public BitbucketInvocable(InvocationContext invocationContext) : base(invocationContext)
+    protected BitbucketWebClient WebClient { get; }
+
+    protected BitbucketInvocable(InvocationContext invocationContext) : base(invocationContext)
     {
         Client = new(Creds);
+        WebClient = new(Creds);
     }
 }
