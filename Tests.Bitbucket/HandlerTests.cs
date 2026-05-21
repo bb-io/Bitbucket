@@ -68,4 +68,20 @@ public class HandlerTests : TestBase
         PrintDataHandlerResult(result);
         Assert.IsNotNull(result);
     }
+
+    [TestMethod]
+    public async Task PullRequestDataHandler_ReturnsPullRequests()
+    {
+        // Arrange
+        var workspaceId = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
+        var repositoryId = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
+        var handler = new PullRequestDataHandler(InvocationContext, workspaceId, repositoryId);
+
+        // Act
+        var result = await handler.GetDataAsync(new DataSourceContext { }, CancellationToken.None);
+
+        // Assert
+        PrintDataHandlerResult(result);
+        Assert.IsNotNull(result);
+    }
 }
