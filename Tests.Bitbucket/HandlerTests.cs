@@ -92,13 +92,14 @@ public class HandlerTests : TestBase
         var workspaceId = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
         var repositoryId = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var branchId = new OptionalBranchIdentifier { BranchName = "dev" };
-        var handler = new FileDataHandler(InvocationContext, workspaceId, repositoryId, branchId);
+        var handler = new FilePickerDataHandler(InvocationContext, workspaceId, repositoryId, branchId);
 
         // Act
-        var result = await handler.GetDataAsync(new DataSourceContext { }, CancellationToken.None);
+        var result = await handler.GetFolderContentAsync(new() { FolderId = "123" }, CancellationToken.None);
 
         // Assert
-        PrintDataHandlerResult(result);
+        foreach (var fileDataItem in result)
+            Console.WriteLine($"{fileDataItem.Id} - {fileDataItem.DisplayName}");
         Assert.IsNotNull(result);
     }
 }
