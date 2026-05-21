@@ -3,11 +3,13 @@ using Apps.Bitbucket.Api.Request;
 using Apps.Bitbucket.Extensions;
 using Apps.Bitbucket.Models.Entities.Branch;
 using Apps.Bitbucket.Models.Identifiers;
+using Apps.Bitbucket.Models.Payloads.Branch.CreateBranch;
 using Apps.Bitbucket.Models.Request.Branch;
 using Apps.Bitbucket.Models.Response.Branch;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using RestSharp;
 
 namespace Apps.Bitbucket.Actions;
@@ -64,14 +66,8 @@ public class BranchActions(InvocationContext invocationContext) : BitbucketInvoc
         
         string endpoint = 
             $"repositories/{workspaceIdentifier.WorkspaceUuid}/{repositoryIdentifier.RepositoryUuid}/refs/branches";
-        var request = new BitbucketCloudRequest(endpoint, Method.Post);
-
-        var body = new
-        {
-            name = createInput.BranchName,
-            target = new { hash = sourceBranch.Target.Hash }
-        };
-        request.AddJsonBody(body);
+        var payload = new CreateBranchPayload(createInput.BranchName, sourceBranch.Target.Hash);
+        var request = new BitbucketCloudRequest(endpoint, Method.Post).WithJsonBody(payload);
 
         var result = await Client.ExecuteWithErrorHandling<BranchEntity>(request);
         return new(result);
