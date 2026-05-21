@@ -1,10 +1,10 @@
 using Apps.Bitbucket.Api.Request;
 using Apps.Bitbucket.Extensions;
+using Apps.Bitbucket.Helper;
 using Apps.Bitbucket.Models.Entities.Branch;
 using Apps.Bitbucket.Models.Identifiers;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
-using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 
 namespace Apps.Bitbucket.Handlers;
@@ -20,24 +20,15 @@ public class BranchDataHandler : BitbucketInvocable, IAsyncDataSourceItemHandler
         [ActionParameter] RepositoryIdentifier repositoryIdentifier) 
         : base(context)
     {
-        List<string> missingInputs = [];
-        
-        if (string.IsNullOrEmpty(workspaceIdentifier.WorkspaceUuid))
-            missingInputs.Add("Workspace UUID");
-        
-        if (string.IsNullOrEmpty(repositoryIdentifier.RepositoryUuid))
-            missingInputs.Add("Repository UUID");
-
-        if (missingInputs.Count != 0)
-        {
-            string missingInputsString = string.Join(", ", missingInputs);
-            throw new PluginMisconfigurationException($"Please specify these inputs first: {missingInputsString}");
-        }
+        InputValidator.ThrowIfMissing(
+            (workspaceIdentifier.WorkspaceUuid, "Workspace UUID"),
+            (repositoryIdentifier.RepositoryUuid, "Repository UUID"));
 
         _workspaceId = workspaceIdentifier.WorkspaceUuid;
         _repositoryId = repositoryIdentifier.RepositoryUuid;
     }
 
+    // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-refs/#api-repositories-workspace-repo-slug-refs-branches-get
     public async Task<IEnumerable<DataSourceItem>> GetDataAsync(DataSourceContext context, CancellationToken ct)
     {
         var request = new BitbucketCloudRequest($"repositories/{_workspaceId}/{_repositoryId}/refs/branches")
