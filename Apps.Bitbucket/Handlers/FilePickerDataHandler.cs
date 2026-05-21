@@ -50,7 +50,9 @@ public class FilePickerDataHandler : BitbucketInvocable, IAsyncFileDataSourceIte
             pathItems.Add(new FolderPathItem { Id = cumulativePath, DisplayName = segment });
         }
 
-        pathItems.RemoveAt(-1);
+        if (pathItems.Count > 1)
+            pathItems.RemoveAt(pathItems.Count - 1);
+        
         return pathItems;
     }
 
