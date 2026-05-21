@@ -41,15 +41,16 @@ public class FilePickerDataHandler : BitbucketInvocable, IAsyncFileDataSourceIte
 
         var pathSegments = context.FileDataItemId.Split('/', StringSplitOptions.RemoveEmptyEntries);
     
-        var pathItems = new List<FolderPathItem>();
+        var pathItems = new List<FolderPathItem> { new() { Id = string.Empty, DisplayName = "Root" } };
         var cumulativePath = string.Empty;
-
+        
         foreach (var segment in pathSegments)
         {
             cumulativePath = string.IsNullOrEmpty(cumulativePath) ? segment : $"{cumulativePath}/{segment}";
             pathItems.Add(new FolderPathItem { Id = cumulativePath, DisplayName = segment });
         }
 
+        pathItems.RemoveAt(-1);
         return pathItems;
     }
 
