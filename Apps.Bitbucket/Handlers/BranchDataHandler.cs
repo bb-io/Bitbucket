@@ -21,8 +21,8 @@ public class BranchDataHandler : BitbucketInvocable, IAsyncDataSourceItemHandler
         : base(context)
     {
         InputValidator.ThrowIfMissing(
-            (workspaceIdentifier.WorkspaceUuid, "Workspace UUID"),
-            (repositoryIdentifier.RepositoryUuid, "Repository UUID"));
+            () => workspaceIdentifier.WorkspaceUuid,
+            () => repositoryIdentifier.RepositoryUuid);
 
         _workspaceId = workspaceIdentifier.WorkspaceUuid;
         _repositoryId = repositoryIdentifier.RepositoryUuid;
