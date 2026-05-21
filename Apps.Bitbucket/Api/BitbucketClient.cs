@@ -14,7 +14,7 @@ namespace Apps.Bitbucket.Api;
 public class BitbucketClient(IEnumerable<AuthenticationCredentialsProvider> creds) : BlackBirdRestClient(new()
 {
     BaseUrl = new Uri("https://api.bitbucket.org/"),
-    Authenticator = new ApiTokenAuthenticator(creds),
+    Authenticator = AuthenticatorFactory.Create(creds),
 })
 {
     protected override Exception ConfigureErrorException(RestResponse response)
