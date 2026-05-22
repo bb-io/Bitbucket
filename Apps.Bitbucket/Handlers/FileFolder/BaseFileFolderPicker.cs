@@ -4,25 +4,22 @@ using Apps.Bitbucket.Helper;
 using Apps.Bitbucket.Models.Entities.File;
 using Apps.Bitbucket.Models.Identifiers;
 using Apps.Bitbucket.Models.Identifiers.Optional;
-using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Invocation;
-using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Models.FileDataSourceItems;
 using File = Blackbird.Applications.SDK.Extensions.FileManagement.Models.FileDataSourceItems.File;
 
-namespace Apps.Bitbucket.Handlers;
+namespace Apps.Bitbucket.Handlers.FileFolder;
 
-public class FilePickerDataHandler : BitbucketInvocable, IAsyncFileDataSourceItemHandler
+public class BaseFileFolderPicker : BitbucketInvocable
 {
     private readonly string _workspaceId;
     private readonly string _repositoryId;
     private readonly string _branchName;
     
-    public FilePickerDataHandler(
-        InvocationContext context,
-        [ActionParameter] WorkspaceIdentifier workspaceIdentifier,
-        [ActionParameter] RepositoryIdentifier repositoryIdentifier,
-        [ActionParameter] OptionalBranchIdentifier branchIdentifier) 
+    public BaseFileFolderPicker(InvocationContext context,
+        WorkspaceIdentifier workspaceIdentifier,
+        RepositoryIdentifier repositoryIdentifier,
+        OptionalBranchIdentifier branchIdentifier) 
         : base(context)
     {
         InputValidator.ThrowIfMissing(
@@ -34,12 +31,12 @@ public class FilePickerDataHandler : BitbucketInvocable, IAsyncFileDataSourceIte
         _branchName = branchIdentifier.GetBranchName();
     }
     
-    public async Task<IEnumerable<FolderPathItem>> GetFolderPathAsync(FolderPathDataSourceContext context, CancellationToken ct)
+    public Task<IEnumerable<FolderPathItem>> GetFolderPathAsync(string? fileDataItemId)
     {
-        if (string.IsNullOrWhiteSpace(context.FileDataItemId))
-            return [];
+        if (string.IsNullOrWhiteSpace(fileDataItemId))
+            return Task.FromResult(Enumerable.Empty<FolderPathItem>());
 
-        var pathSegments = context.FileDataItemId.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        var pathSegments = fileDataItemId.Split('/', StringSplitOptions.RemoveEmptyEntries);
     
         var pathItems = new List<FolderPathItem> { new() { Id = string.Empty, DisplayName = "Root" } };
         var cumulativePath = string.Empty;
@@ -53,12 +50,15 @@ public class FilePickerDataHandler : BitbucketInvocable, IAsyncFileDataSourceIte
         if (pathItems.Count > 1)
             pathItems.RemoveAt(pathItems.Count - 1);
         
-        return pathItems;
+        return Task.FromResult<IEnumerable<FolderPathItem>>(pathItems);
     }
 
-    public async Task<IEnumerable<FileDataItem>> GetFolderContentAsync(FolderContentDataSourceContext context, CancellationToken ct)
+    public async Task<IEnumerable<FileDataItem>> GetFolderContentAsync(
+        string? folderId, 
+        bool filesAreSelectable, 
+        bool foldersAreSelectable)
     {
-        string filePath = context.FolderId ?? string.Empty;
+        string filePath = folderId ?? string.Empty;
         
         var request = new BitbucketCloudRequest($"repositories/{_workspaceId}/{_repositoryId}/src/{_branchName}/{filePath}");
         var result = await Client.Paginate<FileEntity>(request);
@@ -72,7 +72,7 @@ public class FilePickerDataHandler : BitbucketInvocable, IAsyncFileDataSourceIte
             {
                 Id = x.Path, 
                 DisplayName = Path.GetFileName(x.Path),
-                IsSelectable = false
+                IsSelectable = foldersAreSelectable
             });
         
         var files = listResult
@@ -81,11 +81,12 @@ public class FilePickerDataHandler : BitbucketInvocable, IAsyncFileDataSourceIte
             {
                 Id = x.Path, 
                 DisplayName = Path.GetFileName(x.Path),
-                IsSelectable = true
+                IsSelectable = filesAreSelectable
             });
         
         items.AddRange(folders);
         items.AddRange(files);
         return items;
     }
+
 }

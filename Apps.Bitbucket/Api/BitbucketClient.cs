@@ -35,13 +35,13 @@ public class BitbucketClient(IEnumerable<AuthenticationCredentialsProvider> cred
         throw new PluginApplicationException($"{statusCodePart} {errorMessage}");
     }
 
-    public async Task<IEnumerable<T>> PaginateOnce<T>(BitbucketCloudRequest request)
+    public async Task<IEnumerable<T>> PaginateOnce<T>(RestRequest request)
     {
         var result = await ExecuteWithErrorHandling<PaginationResponse<T>>(request);
         return result.Values;
     }
 
-    public async Task<IEnumerable<T>> Paginate<T>(BitbucketCloudRequest request)
+    public async Task<IEnumerable<T>> Paginate<T>(RestRequest request)
     {
         List<T> resultValues = [];
         PaginationResponse<T> paginationResponse = await ExecuteWithErrorHandling<PaginationResponse<T>>(request);
