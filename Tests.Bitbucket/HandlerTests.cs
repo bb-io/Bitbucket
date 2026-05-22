@@ -1,4 +1,5 @@
 ﻿using Apps.Bitbucket.Handlers;
+using Apps.Bitbucket.Handlers.FileFolder;
 using Apps.Bitbucket.Models.Identifiers;
 using Apps.Bitbucket.Models.Identifiers.Optional;
 using Blackbird.Applications.Sdk.Common.Dynamic;
@@ -95,7 +96,7 @@ public class HandlerTests : TestBase
         var handler = new FilePickerDataHandler(InvocationContext, workspaceId, repositoryId, branchId);
 
         // Act
-        var result = await handler.GetFolderContentAsync(new() { FolderId = "123" }, CancellationToken.None);
+        var result = await handler.GetFolderContentAsync(new() { FolderId = "" }, CancellationToken.None);
 
         // Assert
         foreach (var fileDataItem in result)
