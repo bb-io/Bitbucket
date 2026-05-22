@@ -1,3 +1,4 @@
+using System.Text;
 using Apps.Bitbucket.Helper;
 using RestSharp;
 
@@ -24,6 +25,29 @@ public static class RestRequestExtensions
         if (builder.HasConditions)
             request.AddQueryParameter("q", builder.ToString());
 
+        return request;
+    }
+
+    public static T AddBasicAuthHeader<T>(this T request, string username, string password)
+        where T : RestRequest
+    {
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            return request;
+        
+        byte[] credentialBytes = Encoding.UTF8.GetBytes($"{username}:{password}");
+        string encodedCredentials = Convert.ToBase64String(credentialBytes);
+        
+        request.AddOrUpdateHeader("Authorization", $"Basic {encodedCredentials}");
+        return request;
+    }
+
+    public static T AddBearerHeader<T>(this T request, string bearer)
+        where T : RestRequest
+    {
+        if (string.IsNullOrEmpty(bearer))
+            return request;
+        
+        request.AddOrUpdateHeader("Authorization", $"Bearer {bearer}");
         return request;
     }
 }

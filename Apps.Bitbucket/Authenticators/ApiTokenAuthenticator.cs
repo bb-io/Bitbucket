@@ -1,5 +1,5 @@
-using System.Text;
 using Apps.Bitbucket.Constants;
+using Apps.Bitbucket.Extensions;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Utils.Extensions.Sdk;
 using RestSharp;
@@ -14,10 +14,7 @@ public class ApiTokenAuthenticator(IEnumerable<AuthenticationCredentialsProvider
         string username = creds.Get(CredsNames.Username).Value;
         string apiToken = creds.Get(CredsNames.ApiToken).Value;
         
-        byte[] credentialBytes = Encoding.UTF8.GetBytes($"{username}:{apiToken}");
-        string encodedCredentials = Convert.ToBase64String(credentialBytes);
-        
-        request.AddOrUpdateHeader("Authorization", $"Basic {encodedCredentials}");
+        request.AddBasicAuthHeader(username, apiToken);
         return ValueTask.CompletedTask;
     }
 }
