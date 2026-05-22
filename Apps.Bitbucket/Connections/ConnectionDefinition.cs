@@ -23,7 +23,7 @@ public class ConnectionDefinition : IConnectionDefinition
         {
             Name = ConnectionTypes.OAuth2,
             DisplayName = "OAuth2",
-            AuthenticationType = ConnectionAuthenticationType.OAuth2,
+            AuthenticationType = ConnectionAuthenticationType.Undefined,
             ConnectionProperties = new List<ConnectionProperty>
             {
                 new(CredsNames.ClientId) { DisplayName = "Client ID" },
