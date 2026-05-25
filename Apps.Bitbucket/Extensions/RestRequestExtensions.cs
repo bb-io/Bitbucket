@@ -40,14 +40,4 @@ public static class RestRequestExtensions
         request.AddOrUpdateHeader("Authorization", $"Basic {encodedCredentials}");
         return request;
     }
-
-    public static T AddBearerHeader<T>(this T request, string bearer)
-        where T : RestRequest
-    {
-        if (string.IsNullOrEmpty(bearer))
-            return request;
-        
-        request.AddOrUpdateHeader("Authorization", $"Bearer {bearer}");
-        return request;
-    }
 }

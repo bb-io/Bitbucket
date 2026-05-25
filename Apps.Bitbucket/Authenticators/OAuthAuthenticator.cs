@@ -1,5 +1,4 @@
 using Apps.Bitbucket.Constants;
-using Apps.Bitbucket.Extensions;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Utils.Extensions.Sdk;
 using RestSharp;
@@ -12,7 +11,7 @@ public class OAuthAuthenticator(IEnumerable<AuthenticationCredentialsProvider> c
     public ValueTask Authenticate(IRestClient client, RestRequest request)
     {
         string accessToken = creds.Get(CredsNames.AccessToken).Value;
-        request.AddBearerHeader(accessToken);
+        request.AddHeader("Authorization", accessToken);
         return ValueTask.CompletedTask;
     }
 }
