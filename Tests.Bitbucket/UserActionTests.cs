@@ -1,4 +1,5 @@
 ﻿using Apps.Bitbucket.Actions;
+using Apps.Bitbucket.Constants;
 using Apps.Bitbucket.Models.Identifiers;
 using Apps.Bitbucket.Models.Identifiers.Optional;
 using Blackbird.Applications.Sdk.Common.Invocation;
@@ -9,7 +10,7 @@ namespace Tests.Bitbucket;
 [TestClass]
 public class UserActionTests : TestBaseMultipleConnections
 {
-    [TestMethod, TargetConnections]
+    [TestMethod, TargetConnections(ConnectionTypes.ApiToken)]
     public async Task GetMyUserData_ReturnsCurrentUser(InvocationContext invocationContext)
     {
         var actions = new UserActions(invocationContext);

@@ -2,7 +2,6 @@ using Apps.Bitbucket.Api.Request;
 using Apps.Bitbucket.Extensions;
 using Apps.Bitbucket.Helper;
 using Apps.Bitbucket.Models.Entities.File;
-using Apps.Bitbucket.Models.Identifiers;
 using Apps.Bitbucket.Models.Identifiers.Optional;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Models.FileDataSourceItems;
@@ -15,23 +14,21 @@ public class BaseFileFolderPicker : BitbucketInvocable
     private readonly string _workspaceId;
     private readonly string _repositoryId;
     private readonly string _branchName;
-    
-    public BaseFileFolderPicker(InvocationContext context,
-        WorkspaceIdentifier workspaceIdentifier,
-        RepositoryIdentifier repositoryIdentifier,
+
+    protected BaseFileFolderPicker(InvocationContext context,
+        OptionalWorkspaceIdentifier workspaceIdentifier,
+        OptionalRepositoryIdentifier repositoryIdentifier,
         OptionalBranchIdentifier branchIdentifier) 
         : base(context)
     {
-        InputValidator.ThrowIfMissing(
-            () => workspaceIdentifier.WorkspaceUuid,
-            () => repositoryIdentifier.RepositoryUuid);
-
-        _repositoryId = repositoryIdentifier.RepositoryUuid;
-        _workspaceId = workspaceIdentifier.WorkspaceUuid;
+        var resolver = new IdentifierResolver(context.AuthenticationCredentialsProviders);
+        
+        _workspaceId = resolver.ResolveRepositoryUuid(workspaceIdentifier.WorkspaceUuid);
+        _repositoryId = resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
         _branchName = branchIdentifier.GetBranchName();
     }
-    
-    public Task<IEnumerable<FolderPathItem>> GetFolderPathAsync(string? fileDataItemId)
+
+    protected Task<IEnumerable<FolderPathItem>> GetFolderPathAsync(string? fileDataItemId)
     {
         if (string.IsNullOrWhiteSpace(fileDataItemId))
             return Task.FromResult(Enumerable.Empty<FolderPathItem>());
@@ -53,7 +50,7 @@ public class BaseFileFolderPicker : BitbucketInvocable
         return Task.FromResult<IEnumerable<FolderPathItem>>(pathItems);
     }
 
-    public async Task<IEnumerable<FileDataItem>> GetFolderContentAsync(
+    protected async Task<IEnumerable<FileDataItem>> GetFolderContentAsync(
         string? folderId, 
         bool filesAreSelectable, 
         bool foldersAreSelectable)
@@ -88,5 +85,4 @@ public class BaseFileFolderPicker : BitbucketInvocable
         items.AddRange(files);
         return items;
     }
-
 }

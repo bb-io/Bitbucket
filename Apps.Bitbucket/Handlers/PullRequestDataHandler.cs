@@ -2,7 +2,7 @@ using Apps.Bitbucket.Api.Request;
 using Apps.Bitbucket.Extensions;
 using Apps.Bitbucket.Helper;
 using Apps.Bitbucket.Models.Entities.PullRequest;
-using Apps.Bitbucket.Models.Identifiers;
+using Apps.Bitbucket.Models.Identifiers.Optional;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Invocation;
@@ -16,16 +16,14 @@ public class PullRequestDataHandler : BitbucketInvocable, IAsyncDataSourceItemHa
     
     public PullRequestDataHandler(
         InvocationContext context,
-        [ActionParameter] WorkspaceIdentifier workspaceIdentifier,
-        [ActionParameter] RepositoryIdentifier repositoryIdentifier) 
+        [ActionParameter] OptionalWorkspaceIdentifier workspaceIdentifier,
+        [ActionParameter] OptionalRepositoryIdentifier repositoryIdentifier) 
         : base(context)
     {
-        InputValidator.ThrowIfMissing(
-            () => workspaceIdentifier.WorkspaceUuid,
-            () => repositoryIdentifier.RepositoryUuid);
-
-        _workspaceId = workspaceIdentifier.WorkspaceUuid;
-        _repositoryId = repositoryIdentifier.RepositoryUuid;
+        var resolver = new IdentifierResolver(context.AuthenticationCredentialsProviders);
+        
+        _workspaceId = resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
+        _repositoryId = resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
     }
     
     // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-pullrequests/#api-repositories-workspace-repo-slug-pullrequests-get

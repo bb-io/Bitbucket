@@ -1,5 +1,6 @@
 using Apps.Bitbucket.Actions;
 using Apps.Bitbucket.Models.Identifiers;
+using Apps.Bitbucket.Models.Identifiers.Optional;
 using Apps.Bitbucket.Models.Request.PullRequest;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Tests.Bitbucket.Base;
@@ -13,8 +14,8 @@ public class PullRequestActionTests : TestBaseMultipleConnections
     public async Task CreatePullRequest_ReturnsCreatedPullRequest(InvocationContext invocationContext)
     {
         var actions = new PullRequestActions(invocationContext);
-        var workspaceRequest = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var repositoryRequest = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
+        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
+        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var input = new CreatePullRequestRequest
         {
             Title = "test from bird",
@@ -33,8 +34,8 @@ public class PullRequestActionTests : TestBaseMultipleConnections
     public async Task MergePullRequest_ReturnsMergedPullRequest(InvocationContext invocationContext)
     {
         var actions = new PullRequestActions(invocationContext);
-        var workspaceRequest = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var repositoryRequest = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
+        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
+        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var pullRequestRequest = new PullRequestIdentifier { PullRequestId = "3" };
         var input = new MergePullRequestRequest
         {

@@ -1,5 +1,7 @@
 using Apps.Bitbucket.Api.Request;
+using Apps.Bitbucket.Constants;
 using Apps.Bitbucket.Extensions;
+using Apps.Bitbucket.Helper;
 using Apps.Bitbucket.Models.Identifiers.Optional;
 using Apps.Bitbucket.Models.Pagination.User;
 using Blackbird.Applications.Sdk.Common;
@@ -18,10 +20,12 @@ public class UserDataHandler : BitbucketInvocable, IAsyncDataSourceItemHandler
         [ActionParameter] OptionalWorkspaceIdentifier workspaceIdentifier) 
         : base(invocationContext)
     {
-        if (string.IsNullOrWhiteSpace(workspaceIdentifier.WorkspaceUuid))
-            throw new PluginMisconfigurationException("Please specify the workspace UUID in order to search users");
+        if (Creds.HasConnectionType(ConnectionTypes.RepoAccessToken))
+            throw new PluginMisconfigurationException(
+                "This field requires user access, which isn't available with the 'Repository access token' connection type");
 
-        _workspaceUuid = workspaceIdentifier.WorkspaceUuid;
+        var resolver = new IdentifierResolver(invocationContext.AuthenticationCredentialsProviders);
+        _workspaceUuid = resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
     }
 
     // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-workspaces/#api-workspaces-workspace-members-get

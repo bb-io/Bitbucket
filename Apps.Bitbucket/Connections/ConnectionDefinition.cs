@@ -29,6 +29,18 @@ public class ConnectionDefinition : IConnectionDefinition
                 new(CredsNames.ClientId) { DisplayName = "Client ID" },
                 new(CredsNames.ClientSecret) { DisplayName = "Client secret", Sensitive = true } 
             }
+        },
+        new()
+        {
+            Name = ConnectionTypes.RepoAccessToken,
+            DisplayName = "Repository access token",
+            AuthenticationType = ConnectionAuthenticationType.Undefined,
+            ConnectionProperties = new List<ConnectionProperty>
+            {
+                new(CredsNames.WorkspaceUuid) { DisplayName = "Workspace UUID" },
+                new(CredsNames.RepositoryUuid) { DisplayName = "Repository UUID" },
+                new(CredsNames.AccessToken) { DisplayName = "Access token", Sensitive = true }
+            }
         }
     };
 

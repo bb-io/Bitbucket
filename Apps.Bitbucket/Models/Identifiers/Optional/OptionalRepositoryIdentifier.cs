@@ -2,10 +2,10 @@ using Apps.Bitbucket.Handlers;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
-namespace Apps.Bitbucket.Models.Identifiers;
+namespace Apps.Bitbucket.Models.Identifiers.Optional;
 
-public class RepositoryIdentifier
+public class OptionalRepositoryIdentifier
 {
     [Display("Repository UUID"), DataSource(typeof(RepositoryDataHandler))]
-    public string RepositoryUuid { get; set; } = string.Empty;
+    public string? RepositoryUuid { get; set; } = string.Empty;
 }

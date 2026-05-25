@@ -1,4 +1,3 @@
-using Apps.Bitbucket.Models.Identifiers;
 using Apps.Bitbucket.Models.Identifiers.Optional;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Invocation;
@@ -9,8 +8,8 @@ namespace Apps.Bitbucket.Handlers.FileFolder;
 
 public class FilePickerDataHandler(
     InvocationContext context,
-    [ActionParameter] WorkspaceIdentifier workspaceIdentifier,
-    [ActionParameter] RepositoryIdentifier repositoryIdentifier,
+    [ActionParameter] OptionalWorkspaceIdentifier workspaceIdentifier,
+    [ActionParameter] OptionalRepositoryIdentifier repositoryIdentifier,
     [ActionParameter] OptionalBranchIdentifier branchIdentifier)
     : BaseFileFolderPicker(context, workspaceIdentifier, repositoryIdentifier, branchIdentifier), 
         IAsyncFileDataSourceItemHandler

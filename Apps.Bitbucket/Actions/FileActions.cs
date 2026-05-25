@@ -1,6 +1,7 @@
 using System.Net;
 using Apps.Bitbucket.Api.Request;
 using Apps.Bitbucket.Extensions;
+using Apps.Bitbucket.Helper;
 using Apps.Bitbucket.Models.Entities.File;
 using Apps.Bitbucket.Models.Identifiers;
 using Apps.Bitbucket.Models.Identifiers.Optional;
@@ -19,15 +20,20 @@ namespace Apps.Bitbucket.Actions;
 public class FileActions(InvocationContext context, IFileManagementClient fileManagementClient) 
     : BitbucketInvocable(context)
 {
+    private readonly IdentifierResolver _resolver = new(context.AuthenticationCredentialsProviders);
+    
     // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-source/#api-repositories-workspace-repo-slug-src-commit-path-get
     [Action("Download file", Description = "Download a file")]
     public async Task<FileReferenceResponse> DownloadFile(
-        [ActionParameter] WorkspaceIdentifier workspaceIdentifier,
-        [ActionParameter] RepositoryIdentifier repositoryIdentifier,
+        [ActionParameter] OptionalWorkspaceIdentifier workspaceIdentifier,
+        [ActionParameter] OptionalRepositoryIdentifier repositoryIdentifier,
         [ActionParameter] OptionalBranchIdentifier branchIdentifier,
         [ActionParameter] FilePathIdentifier filePathIdentifier)
     {
-        string endpoint = $"repositories/{workspaceIdentifier.WorkspaceUuid}/{repositoryIdentifier.RepositoryUuid}" +
+        string workspaceUuid = _resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
+        string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
+        
+        string endpoint = $"repositories/{workspaceUuid}/{repositoryUuid}" +
                           $"/src/{branchIdentifier.GetBranchName()}/{filePathIdentifier.FilePath}";
         var request = new BitbucketCloudRequest(endpoint);
 
@@ -43,13 +49,15 @@ public class FileActions(InvocationContext context, IFileManagementClient fileMa
 
     [Action("Download repository as zip", Description = "Download repository content as a zip file")]
     public async Task<FileReferenceResponse> DownloadRepositoryZip(
-        [ActionParameter] WorkspaceIdentifier workspaceIdentifier,
-        [ActionParameter] RepositoryIdentifier repositoryIdentifier,
+        [ActionParameter] OptionalWorkspaceIdentifier workspaceIdentifier,
+        [ActionParameter] OptionalRepositoryIdentifier repositoryIdentifier,
         [ActionParameter] OptionalBranchIdentifier branchIdentifier)
     {
+        string workspaceUuid = _resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
+        string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
+        
         string fileName = $"{branchIdentifier.GetBranchName()}.zip";
-        string endpoint = $"{workspaceIdentifier.WorkspaceUuid}/{repositoryIdentifier.RepositoryUuid}/get/{fileName}";
-        var request = new RestRequest(endpoint);
+        var request = new RestRequest($"{workspaceUuid}/{repositoryUuid}/get/{fileName}");
         
         var response = await WebClient.ExecuteWithErrorHandling(request);
         using var stream = new MemoryStream(response.RawBytes ?? []);
@@ -64,13 +72,16 @@ public class FileActions(InvocationContext context, IFileManagementClient fileMa
     // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-source/#api-repositories-workspace-repo-slug-src-post
     [Action("Delete file", Description = "Commit file deletion")]
     public async Task DeleteFile(
-        [ActionParameter] WorkspaceIdentifier workspaceIdentifier,
-        [ActionParameter] RepositoryIdentifier repositoryIdentifier,
+        [ActionParameter] OptionalWorkspaceIdentifier workspaceIdentifier,
+        [ActionParameter] OptionalRepositoryIdentifier repositoryIdentifier,
         [ActionParameter] OptionalBranchIdentifier branchIdentifier,
         [ActionParameter] FilePathIdentifier filePathIdentifier,
         [ActionParameter] DeleteFileRequest deleteInput)
     {
-        string endpoint = $"repositories/{workspaceIdentifier.WorkspaceUuid}/{repositoryIdentifier.RepositoryUuid}/src";
+        string workspaceUuid = _resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
+        string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
+        
+        string endpoint = $"repositories/{workspaceUuid}/{repositoryUuid}/src";
         var request = new BitbucketCloudRequest(endpoint, Method.Post) { AlwaysMultipartFormData = true }
             .AddParameter("files", filePathIdentifier.FilePath)
             .AddParameterIfNotEmpty("branch", branchIdentifier.BranchName)
@@ -82,12 +93,15 @@ public class FileActions(InvocationContext context, IFileManagementClient fileMa
     // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-source/#api-repositories-workspace-repo-slug-src-commit-path-get
     [Action("File exists", Description = "Check if file exists by path")]
     public async Task<bool> FileExists(
-        [ActionParameter] WorkspaceIdentifier workspaceIdentifier,
-        [ActionParameter] RepositoryIdentifier repositoryIdentifier,
+        [ActionParameter] OptionalWorkspaceIdentifier workspaceIdentifier,
+        [ActionParameter] OptionalRepositoryIdentifier repositoryIdentifier,
         [ActionParameter] OptionalBranchIdentifier branchIdentifier,
         [ActionParameter] FilePathIdentifier filePathIdentifier)
     {
-        string endpoint = $"repositories/{workspaceIdentifier.WorkspaceUuid}/{repositoryIdentifier.RepositoryUuid}" +
+        string workspaceUuid = _resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
+        string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
+        
+        string endpoint = $"repositories/{workspaceUuid}/{repositoryUuid}" +
                           $"/src/{branchIdentifier.GetBranchName()}/{filePathIdentifier.FilePath}";
         var request = new BitbucketCloudRequest(endpoint)
             .AddQueryParameter("format", "meta");
@@ -99,12 +113,15 @@ public class FileActions(InvocationContext context, IFileManagementClient fileMa
     // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-source/#api-repositories-workspace-repo-slug-src-post
     [Action("Upload file", Description = "Commit file upload. Overwrites existing file")]
     public async Task UploadFile(
-        [ActionParameter] WorkspaceIdentifier workspaceIdentifier,
-        [ActionParameter] RepositoryIdentifier repositoryIdentifier,
+        [ActionParameter] OptionalWorkspaceIdentifier workspaceIdentifier,
+        [ActionParameter] OptionalRepositoryIdentifier repositoryIdentifier,
         [ActionParameter] OptionalBranchIdentifier branchIdentifier,
         [ActionParameter] OptionalFolderPathIdentifier optionalFolderPathIdentifier,
         [ActionParameter] UploadFileRequest uploadInput)
     {
+        string workspaceUuid = _resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
+        string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
+        
         var file = await fileManagementClient.DownloadAsync(uploadInput.File);
         var fileBytes = await file.GetByteData();
         
@@ -112,7 +129,7 @@ public class FileActions(InvocationContext context, IFileManagementClient fileMa
         string? folderPath = optionalFolderPathIdentifier.FolderPath;
         string targetFilePath = string.IsNullOrEmpty(folderPath) ? fileName : $"{folderPath}/{fileName}";
         
-        string endpoint = $"repositories/{workspaceIdentifier.WorkspaceUuid}/{repositoryIdentifier.RepositoryUuid}/src";
+        string endpoint = $"repositories/{workspaceUuid}/{repositoryUuid}/src";
         var request = new BitbucketCloudRequest(endpoint, Method.Post) { AlwaysMultipartFormData = true }
             .AddParameterIfNotEmpty("branch", branchIdentifier.BranchName)
             .AddParameterIfNotEmpty("message", uploadInput.Message)
@@ -124,17 +141,19 @@ public class FileActions(InvocationContext context, IFileManagementClient fileMa
     // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-source/#api-repositories-workspace-repo-slug-src-commit-path-get
     [Action("Search files in folder", Description = "Search files in a folder")]
     public async Task<SearchFilesResponse> SearchFiles(
-        [ActionParameter] WorkspaceIdentifier workspaceIdentifier,
-        [ActionParameter] RepositoryIdentifier repositoryIdentifier,
+        [ActionParameter] OptionalWorkspaceIdentifier workspaceIdentifier,
+        [ActionParameter] OptionalRepositoryIdentifier repositoryIdentifier,
         [ActionParameter] OptionalBranchIdentifier branchIdentifier,
         [ActionParameter] OptionalFolderPathIdentifier optionalFolderPathIdentifier,
         [ActionParameter] SearchFilesRequest searchInput)
     {
+        string workspaceUuid = _resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
+        string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
+        
         string rawPath = optionalFolderPathIdentifier.FolderPath?.Trim('/') ?? string.Empty;
         string safeFolderPath = string.IsNullOrEmpty(rawPath) ? string.Empty : $"{rawPath}/";
         
-        string baseEndpoint = $"repositories/{workspaceIdentifier.WorkspaceUuid}/{repositoryIdentifier.RepositoryUuid}" +
-                          $"/src/{branchIdentifier.GetBranchName()}/";
+        string baseEndpoint = $"repositories/{workspaceUuid}/{repositoryUuid}/src/{branchIdentifier.GetBranchName()}/";
         var request = new BitbucketCloudRequest(baseEndpoint + safeFolderPath)
             .AddBitbucketQuery(q =>
             {

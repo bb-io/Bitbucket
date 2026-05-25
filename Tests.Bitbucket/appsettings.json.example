@@ -2,12 +2,18 @@
   "ConnectionDefinition": [
       {
         "ConnectionType": "API Token",
-        "Username": "your_account_email",
+        "Username": "",
         "ApiToken": ""
       },
       {
         "ConnectionType": "OAuth2",
-        "AccessToken": "Bearer token"
+        "AccessToken": "Bearer ..."
+      },
+      {
+        "ConnectionType": "Repository access token",
+        "WorkspaceUuid": "{...}",
+        "RepositoryUuid": "{...}",
+        "AccessToken": ""
       }
   ],
   "TestFolder": "TestFiles"

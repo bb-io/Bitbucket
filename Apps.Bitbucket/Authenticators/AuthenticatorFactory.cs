@@ -16,6 +16,7 @@ public static class AuthenticatorFactory
         {
             ConnectionTypes.ApiToken => new ApiTokenAuthenticator(credsList),
             ConnectionTypes.OAuth2 => new OAuthAuthenticator(credsList),
+            ConnectionTypes.RepoAccessToken => new AccessTokenFactory(credsList),
             _ => throw new Exception($"Unknown connection type was passed to AuthenticatorFactory: {connectionType}")
         };
     }

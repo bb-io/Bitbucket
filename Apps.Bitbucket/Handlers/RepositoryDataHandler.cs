@@ -1,7 +1,9 @@
 using Apps.Bitbucket.Api.Request;
+using Apps.Bitbucket.Constants;
 using Apps.Bitbucket.Extensions;
+using Apps.Bitbucket.Helper;
 using Apps.Bitbucket.Models.Entities.Repository;
-using Apps.Bitbucket.Models.Identifiers;
+using Apps.Bitbucket.Models.Identifiers.Optional;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Exceptions;
@@ -15,13 +17,16 @@ public class RepositoryDataHandler : BitbucketInvocable, IAsyncDataSourceItemHan
     
     public RepositoryDataHandler(
         InvocationContext invocationContext,
-        [ActionParameter] WorkspaceIdentifier workspaceIdentifier) 
+        [ActionParameter] OptionalWorkspaceIdentifier workspaceIdentifier) 
         : base(invocationContext)
     {
-        if (string.IsNullOrEmpty(workspaceIdentifier.WorkspaceUuid))
-            throw new PluginMisconfigurationException("Please specify the workspace UUID first");
+        if (Creds.HasConnectionType(ConnectionTypes.RepoAccessToken))
+            throw new PluginMisconfigurationException(
+                "'Repository access token' connection type is scoped to a single repository, " +
+                "which is already set in your connection");
 
-        _workspaceId = workspaceIdentifier.WorkspaceUuid;
+        var resolver = new IdentifierResolver(invocationContext.AuthenticationCredentialsProviders);
+        _workspaceId = resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
     }
 
     // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-repositories/#api-repositories-workspace-get

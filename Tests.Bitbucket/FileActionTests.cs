@@ -15,8 +15,8 @@ public class FileActionTests : TestBaseMultipleConnections
     public async Task DownloadFile_IsSuccess(InvocationContext invocationContext)
     {
         var actions = new FileActions(invocationContext, FileManager);
-        var workspaceRequest = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var repositoryRequest = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
+        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
+        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var branchRequest = new OptionalBranchIdentifier { BranchName = "dev" };
         var filePathRequest = new FilePathIdentifier { FilePath = "123/hi.txt" };
 
@@ -34,8 +34,8 @@ public class FileActionTests : TestBaseMultipleConnections
     public async Task DownloadRepositoryZip_IsSuccess(InvocationContext invocationContext)
     {
         var actions = new FileActions(invocationContext, FileManager);
-        var workspaceRequest = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var repositoryRequest = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
+        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
+        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var branchRequest = new OptionalBranchIdentifier { };
 
         var result = await actions.DownloadRepositoryZip(workspaceRequest, repositoryRequest, branchRequest);
@@ -48,8 +48,8 @@ public class FileActionTests : TestBaseMultipleConnections
     public async Task DeleteFile_IsSuccess(InvocationContext invocationContext)
     {
         var actions = new FileActions(invocationContext, FileManager);
-        var workspaceRequest = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var repositoryRequest = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
+        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
+        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var branchRequest = new OptionalBranchIdentifier { BranchName = "dev" };
         var fileIdentifier = new FilePathIdentifier { FilePath = "hello1.txt" };
         var deleteInput = new DeleteFileRequest { Message = "test msg" };
@@ -61,8 +61,8 @@ public class FileActionTests : TestBaseMultipleConnections
     public async Task FileExists_ExistingFile_ReturnsTrue(InvocationContext invocationContext)
     {
         var actions = new FileActions(invocationContext, FileManager);
-        var workspaceRequest = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var repositoryRequest = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
+        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
+        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var branchRequest = new OptionalBranchIdentifier { BranchName = "dev" };
         var fileIdentifier = new FilePathIdentifier { FilePath = "hello.txt" };
 
@@ -75,8 +75,8 @@ public class FileActionTests : TestBaseMultipleConnections
     public async Task FileExists_NonExistingFile_ReturnsFalse(InvocationContext invocationContext)
     {
         var actions = new FileActions(invocationContext, FileManager);
-        var workspaceRequest = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var repositoryRequest = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
+        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
+        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var branchRequest = new OptionalBranchIdentifier { BranchName = "dev" };
         var fileIdentifier = new FilePathIdentifier { FilePath = "hello1.txt" };
 
@@ -89,8 +89,8 @@ public class FileActionTests : TestBaseMultipleConnections
     public async Task UploadFile_IsSuccess(InvocationContext invocationContext)
     {
         var actions = new FileActions(invocationContext, FileManager);
-        var workspaceRequest = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var repositoryRequest = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
+        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
+        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var branchRequest = new OptionalBranchIdentifier { BranchName = "dev" };
         var optionalFolderPathIdentifier = new OptionalFolderPathIdentifier { FolderPath = "123/456" };
         var uploadRequest = new UploadFileRequest
@@ -111,8 +111,8 @@ public class FileActionTests : TestBaseMultipleConnections
     public async Task SearchFiles_ReturnsFiles(InvocationContext invocationContext)
     {
         var actions = new FileActions(invocationContext, FileManager);
-        var workspaceRequest = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var repositoryRequest = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
+        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
+        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var branchRequest = new OptionalBranchIdentifier { BranchName = "dev" };
         var optionalFolderPathIdentifier = new OptionalFolderPathIdentifier { FolderPath = "123" };
         var searchFilesRequest = new SearchFilesRequest
