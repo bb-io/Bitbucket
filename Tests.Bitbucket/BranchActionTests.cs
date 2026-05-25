@@ -1,18 +1,19 @@
 using Apps.Bitbucket.Actions;
 using Apps.Bitbucket.Models.Identifiers;
 using Apps.Bitbucket.Models.Request.Branch;
+using Blackbird.Applications.Sdk.Common.Invocation;
 using Tests.Bitbucket.Base;
 
 namespace Tests.Bitbucket;
 
 [TestClass]
-public class BranchActionTests : TestBase
+public class BranchActionTests : TestBaseMultipleConnections
 {
-    [TestMethod]
-    public async Task SearchBranches_ReturnsBranches()
+    [TestMethod, TargetConnections]
+    public async Task SearchBranches_ReturnsBranches(InvocationContext invocationContext)
     {
         // Arrange
-        var actions = new BranchActions(InvocationContext);
+        var actions = new BranchActions(invocationContext);
         var workspaceRequest = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
         var repositoryRequest = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var searchInput = new SearchBranchesRequest { BranchNameContains = "" };
@@ -26,11 +27,11 @@ public class BranchActionTests : TestBase
         Assert.IsNotEmpty(result.Branches, "No branches returned");
     }
 
-    [TestMethod]
-    public async Task BranchExists_ExistingBranch_ReturnsTrue()
+    [TestMethod, TargetConnections]
+    public async Task BranchExists_ExistingBranch_ReturnsTrue(InvocationContext invocationContext)
     {
         // Arrange
-        var actions = new BranchActions(InvocationContext);
+        var actions = new BranchActions(invocationContext);
         var workspaceRequest = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
         var repositoryRequest = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var existsInput = new BranchExistsRequest { Name = "dev" };
@@ -42,11 +43,11 @@ public class BranchActionTests : TestBase
         Assert.IsTrue(result);
     }
 
-    [TestMethod]
-    public async Task BranchExists_NonExistingBranch_ReturnsFalse()
+    [TestMethod, TargetConnections]
+    public async Task BranchExists_NonExistingBranch_ReturnsFalse(InvocationContext invocationContext)
     {
         // Arrange
-        var actions = new BranchActions(InvocationContext);
+        var actions = new BranchActions(invocationContext);
         var workspaceRequest = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
         var repositoryRequest = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var existsInput = new BranchExistsRequest { Name = "test" };
@@ -58,11 +59,11 @@ public class BranchActionTests : TestBase
         Assert.IsFalse(result);
     }
 
-    [TestMethod]
-    public async Task CreateBranch_ReturnsCreatedBranch()
+    [TestMethod, TargetConnections]
+    public async Task CreateBranch_ReturnsCreatedBranch(InvocationContext invocationContext)
     {
         // Arrange
-        var actions = new BranchActions(InvocationContext);
+        var actions = new BranchActions(invocationContext);
         var workspaceRequest = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
         var repositoryRequest = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var createInput = new CreateBranchRequest

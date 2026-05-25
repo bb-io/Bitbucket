@@ -3,104 +3,87 @@ using Apps.Bitbucket.Handlers.FileFolder;
 using Apps.Bitbucket.Models.Identifiers;
 using Apps.Bitbucket.Models.Identifiers.Optional;
 using Blackbird.Applications.Sdk.Common.Dynamic;
+using Blackbird.Applications.Sdk.Common.Invocation;
 using Tests.Bitbucket.Base;
 
 namespace Tests.Bitbucket;
 
 [TestClass]
-public class HandlerTests : TestBase
+public class HandlerTests : TestBaseMultipleConnections
 {
-    [TestMethod]
-    public async Task WorkspaceDataHandler_ReturnsWorkspacesForCurrentUser()
+    [TestMethod, TargetConnections]
+    public async Task WorkspaceDataHandler_ReturnsWorkspacesForCurrentUser(InvocationContext invocationContext)
     {
-        // Arrange
-        var handler = new WorkspaceDataHandler(InvocationContext);
+        var handler = new WorkspaceDataHandler(invocationContext);
 
-        // Act
         var result = await handler.GetDataAsync(new DataSourceContext { SearchString = "ab" }, CancellationToken.None);
 
-        // Assert
         PrintDataHandlerResult(result);
         Assert.IsNotNull(result);
     }
 
-    [TestMethod]
-    public async Task UserDataHandler_ReturnsUsers()
+    [TestMethod, TargetConnections]
+    public async Task UserDataHandler_ReturnsUsers(InvocationContext invocationContext)
     {
-        // Arrange
         var workspaceId = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var handler = new UserDataHandler(InvocationContext, workspaceId);
+        var handler = new UserDataHandler(invocationContext, workspaceId);
 
-        // Act
         var result = await handler.GetDataAsync(new DataSourceContext { SearchString = "an" }, CancellationToken.None);
 
-        // Assert
         PrintDataHandlerResult(result);
         Assert.IsNotNull(result);
     }
 
-    [TestMethod]
-    public async Task RepositoryDataHandler_ReturnsRepositories()
+    [TestMethod, TargetConnections]
+    public async Task RepositoryDataHandler_ReturnsRepositories(InvocationContext invocationContext)
     {
-        // Arrange
         var workspaceId = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var handler = new RepositoryDataHandler(InvocationContext, workspaceId);
+        var handler = new RepositoryDataHandler(invocationContext, workspaceId);
 
-        // Act
         var result = await handler.GetDataAsync(new DataSourceContext { }, CancellationToken.None);
 
-        // Assert
         PrintDataHandlerResult(result);
         Assert.IsNotNull(result);
     }
 
-    [TestMethod]
-    public async Task BranchDataHandler_ReturnsBranches()
+    [TestMethod, TargetConnections]
+    public async Task BranchDataHandler_ReturnsBranches(InvocationContext invocationContext)
     {
-        // Arrange
         var workspaceId = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
         var repositoryId = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
-        var handler = new BranchDataHandler(InvocationContext, workspaceId, repositoryId);
+        var handler = new BranchDataHandler(invocationContext, workspaceId, repositoryId);
 
-        // Act
         var result = await handler.GetDataAsync(new DataSourceContext { }, CancellationToken.None);
 
-        // Assert
         PrintDataHandlerResult(result);
         Assert.IsNotNull(result);
     }
 
-    [TestMethod]
-    public async Task PullRequestDataHandler_ReturnsPullRequests()
+    [TestMethod, TargetConnections]
+    public async Task PullRequestDataHandler_ReturnsPullRequests(InvocationContext invocationContext)
     {
-        // Arrange
         var workspaceId = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
         var repositoryId = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
-        var handler = new PullRequestDataHandler(InvocationContext, workspaceId, repositoryId);
+        var handler = new PullRequestDataHandler(invocationContext, workspaceId, repositoryId);
 
-        // Act
         var result = await handler.GetDataAsync(new DataSourceContext { }, CancellationToken.None);
 
-        // Assert
         PrintDataHandlerResult(result);
         Assert.IsNotNull(result);
     }
 
-    [TestMethod]
-    public async Task FileDataHandler_ReturnsFiles()
+    [TestMethod, TargetConnections]
+    public async Task FileDataHandler_ReturnsFiles(InvocationContext invocationContext)
     {
-        // Arrange
         var workspaceId = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
         var repositoryId = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var branchId = new OptionalBranchIdentifier { BranchName = "dev" };
-        var handler = new FilePickerDataHandler(InvocationContext, workspaceId, repositoryId, branchId);
+        var handler = new FilePickerDataHandler(invocationContext, workspaceId, repositoryId, branchId);
 
-        // Act
         var result = await handler.GetFolderContentAsync(new() { FolderId = "" }, CancellationToken.None);
 
-        // Assert
         foreach (var fileDataItem in result)
-            Console.WriteLine($"{fileDataItem.Id} - {fileDataItem.DisplayName}");
+            TestContext?.WriteLine($"{fileDataItem.Id} - {fileDataItem.DisplayName}");
         Assert.IsNotNull(result);
     }
 }

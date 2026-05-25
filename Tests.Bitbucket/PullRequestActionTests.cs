@@ -1,18 +1,18 @@
 using Apps.Bitbucket.Actions;
 using Apps.Bitbucket.Models.Identifiers;
 using Apps.Bitbucket.Models.Request.PullRequest;
+using Blackbird.Applications.Sdk.Common.Invocation;
 using Tests.Bitbucket.Base;
 
 namespace Tests.Bitbucket;
 
 [TestClass]
-public class PullRequestActionTests : TestBase
+public class PullRequestActionTests : TestBaseMultipleConnections
 {
-    [TestMethod]
-    public async Task CreatePullRequest_ReturnsCreatedPullRequest()
+    [TestMethod, TargetConnections]
+    public async Task CreatePullRequest_ReturnsCreatedPullRequest(InvocationContext invocationContext)
     {
-        // Arrange
-        var actions = new PullRequestActions(InvocationContext);
+        var actions = new PullRequestActions(invocationContext);
         var workspaceRequest = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
         var repositoryRequest = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var input = new CreatePullRequestRequest
@@ -23,19 +23,16 @@ public class PullRequestActionTests : TestBase
             TargetBranchName = "main"
         };
 
-        // Act
         var result = await actions.CreatePullRequest(workspaceRequest, repositoryRequest, input);
 
-        // Assert
         PrintResult(result);
         Assert.IsNotNull(result);
     }
 
-    [TestMethod]
-    public async Task MergePullRequest_ReturnsMergedPullRequest()
+    [TestMethod, TargetConnections]
+    public async Task MergePullRequest_ReturnsMergedPullRequest(InvocationContext invocationContext)
     {
-        // Arrange
-        var actions = new PullRequestActions(InvocationContext);
+        var actions = new PullRequestActions(invocationContext);
         var workspaceRequest = new WorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
         var repositoryRequest = new RepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var pullRequestRequest = new PullRequestIdentifier { PullRequestId = "3" };
@@ -44,10 +41,8 @@ public class PullRequestActionTests : TestBase
             CommitMessage = "test from tests"
         };
 
-        // Act
         var result = await actions.MergePullRequest(workspaceRequest, repositoryRequest, pullRequestRequest, input);
 
-        // Assert
         PrintResult(result);
         Assert.IsNotNull(result);
     }

@@ -1,7 +1,14 @@
 {
-  "ConnectionDefinition": {
-    "Username": "your_account_email",
-    "ApiToken": ""
-  },
+  "ConnectionDefinition": [
+      {
+        "ConnectionType": "API Token",
+        "Username": "your_account_email",
+        "ApiToken": ""
+      },
+      {
+        "ConnectionType": "OAuth2",
+        "AccessToken": "Bearer token"
+      }
+  ],
   "TestFolder": "TestFiles"
 }
