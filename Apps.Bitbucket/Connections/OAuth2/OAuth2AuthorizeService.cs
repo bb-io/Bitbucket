@@ -1,11 +1,12 @@
 using Apps.Bitbucket.Constants;
+using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication.OAuth2;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace Apps.Bitbucket.Connections.OAuth2;
 
-public class OAuth2AuthorizeService(InvocationContext context) : BitbucketInvocable(context), IOAuth2AuthorizeService
+public class OAuth2AuthorizeService(InvocationContext context) : BaseInvocable(context), IOAuth2AuthorizeService
 {
     public string GetAuthorizationUrl(Dictionary<string, string> values)
     {

@@ -3,6 +3,7 @@ using System.Text.Json;
 using Apps.Bitbucket.Constants;
 using Apps.Bitbucket.Extensions;
 using Apps.Bitbucket.Models.Utility.Auth;
+using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Authentication.OAuth2;
 using Blackbird.Applications.Sdk.Common.Invocation;
@@ -10,7 +11,7 @@ using RestSharp;
 
 namespace Apps.Bitbucket.Connections.OAuth2;
 
-public class OAuth2TokenService(InvocationContext context) : BitbucketInvocable(context), IOAuth2TokenService, ITokenRefreshable
+public class OAuth2TokenService(InvocationContext context) : BaseInvocable(context), IOAuth2TokenService, ITokenRefreshable
 {
     private const string TokenUrl = "https://bitbucket.org/site/oauth2/access_token";
     
