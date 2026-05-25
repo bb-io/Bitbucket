@@ -4,7 +4,7 @@ using Blackbird.Applications.Sdk.Common.Authentication.OAuth2;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Apps.Bitbucket.Connections.OAuth2;
+namespace Apps.Bitbucket.Connections.OAuth;
 
 public class OAuth2AuthorizeService(InvocationContext context) : BaseInvocable(context), IOAuth2AuthorizeService
 {

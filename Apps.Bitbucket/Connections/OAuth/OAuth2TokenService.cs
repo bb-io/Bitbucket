@@ -9,7 +9,7 @@ using Blackbird.Applications.Sdk.Common.Authentication.OAuth2;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using RestSharp;
 
-namespace Apps.Bitbucket.Connections.OAuth2;
+namespace Apps.Bitbucket.Connections.OAuth;
 
 public class OAuth2TokenService(InvocationContext context) : BaseInvocable(context), IOAuth2TokenService, ITokenRefreshable
 {
