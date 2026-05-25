@@ -11,7 +11,7 @@ namespace Tests.Bitbucket;
 [TestClass]
 public class HandlerTests : TestBaseMultipleConnections
 {
-    [TestMethod, TargetConnections(ConnectionTypes.RepoAccessToken)]
+    [TestMethod, TargetConnections(ConnectionTypes.ApiToken)]
     public async Task WorkspaceDataHandler_ReturnsWorkspacesForCurrentUser(InvocationContext invocationContext)
     {
         var handler = new WorkspaceDataHandler(invocationContext);
@@ -72,7 +72,7 @@ public class HandlerTests : TestBaseMultipleConnections
         Assert.IsNotNull(result);
     }
 
-    [TestMethod, TargetConnections]
+    [TestMethod, TargetConnections(ConnectionTypes.RepoAccessToken)]
     public async Task FileDataHandler_ReturnsFiles(InvocationContext invocationContext)
     {
         var workspaceId = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };

@@ -23,7 +23,7 @@ public class BaseFileFolderPicker : BitbucketInvocable
     {
         var resolver = new IdentifierResolver(context.AuthenticationCredentialsProviders);
         
-        _workspaceId = resolver.ResolveRepositoryUuid(workspaceIdentifier.WorkspaceUuid);
+        _workspaceId = resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
         _repositoryId = resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
         _branchName = branchIdentifier.GetBranchName();
     }
