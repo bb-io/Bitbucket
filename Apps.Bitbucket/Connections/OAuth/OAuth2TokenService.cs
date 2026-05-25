@@ -31,6 +31,7 @@ public class OAuth2TokenService(InvocationContext context) : BaseInvocable(conte
         request.AddParameter("code", code);
         request.AddParameter("client_id", clientId);
         request.AddParameter("client_secret", clientSecret);
+        request.AddParameter("redirect_uri", $"{InvocationContext.UriInfo.BridgeServiceUrl.ToString().TrimEnd('/')}/AuthorizationCode");
 
         var response = await client.ExecuteAsync(request, cancellationToken);
         if (!response.IsSuccessful)
@@ -80,6 +81,7 @@ public class OAuth2TokenService(InvocationContext context) : BaseInvocable(conte
         request.AddParameter("refresh_token", refreshToken);
         request.AddParameter("client_id", clientId);
         request.AddParameter("client_secret", clientSecret);
+        request.AddParameter("redirect_uri", $"{InvocationContext.UriInfo.BridgeServiceUrl.ToString().TrimEnd('/')}/AuthorizationCode");
 
         var response = await client.ExecuteAsync(request, ct);
         if (!response.IsSuccessful)
