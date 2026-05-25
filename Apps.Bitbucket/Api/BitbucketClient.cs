@@ -1,5 +1,4 @@
 using System.Net;
-using Apps.Bitbucket.Api.Request;
 using Apps.Bitbucket.Authenticators;
 using Apps.Bitbucket.Models.Pagination;
 using Apps.Bitbucket.Models.Utility.Error;
@@ -7,6 +6,7 @@ using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Utils.RestSharp;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 
 namespace Apps.Bitbucket.Api;
@@ -29,8 +29,15 @@ public class BitbucketClient(IEnumerable<AuthenticationCredentialsProvider> cred
         var errorObject = error?.Error;
         
         string errorMessage = errorObject?.Message ?? "Unknown error. ";
-        if (!string.IsNullOrWhiteSpace(errorObject?.Detail))
-            errorMessage = $"{errorObject.Detail} - {errorMessage}";
+        if (errorObject?.Detail == null) 
+            throw new PluginApplicationException($"{statusCodePart} {errorMessage}");
+        
+        string detailString = errorObject.Detail.Type == JTokenType.String
+            ? errorObject.Detail.ToString()
+            : errorObject.Detail.ToString(Formatting.None);
+
+        if (!string.IsNullOrWhiteSpace(detailString))
+            errorMessage = $"{errorMessage} {detailString}";
 
         throw new PluginApplicationException($"{statusCodePart} {errorMessage}");
     }

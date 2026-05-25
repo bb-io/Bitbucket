@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Apps.Bitbucket.Models.Utility.Error;
 
@@ -8,5 +9,5 @@ public class ErrorBody
     public string Message { get; set; } = string.Empty;
 
     [JsonProperty("detail")]
-    public string? Detail { get; set; }
+    public JToken? Detail { get; set; }
 }
