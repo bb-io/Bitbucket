@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text.Json;
 using Apps.Bitbucket.Constants;
 using Apps.Bitbucket.Extensions;
 using Apps.Bitbucket.Models.Utility.Auth;
@@ -7,6 +6,7 @@ using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Authentication.OAuth2;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Newtonsoft.Json;
 using RestSharp;
 
 namespace Apps.Bitbucket.Connections.OAuth;
@@ -42,7 +42,7 @@ public class OAuth2TokenService(InvocationContext context) : BaseInvocable(conte
             throw new Exception($"Failed to get token: {response.Content}");
         }
 
-        var tokenData = JsonSerializer.Deserialize<AuthResponse>(response.Content ?? string.Empty);
+        var tokenData = JsonConvert.DeserializeObject<AuthResponse>(response.Content ?? string.Empty);
         if (tokenData is not null)
         {
             return new Dictionary<string, string>
@@ -90,7 +90,7 @@ public class OAuth2TokenService(InvocationContext context) : BaseInvocable(conte
             throw new Exception($"Failed to refresh token: {response.Content}");
         }
 
-        var tokenData = JsonSerializer.Deserialize<AuthResponse>(response.Content ?? string.Empty);
+        var tokenData = JsonConvert.DeserializeObject<AuthResponse>(response.Content ?? string.Empty);
         if (tokenData is not null)
         {
             return new Dictionary<string, string>
