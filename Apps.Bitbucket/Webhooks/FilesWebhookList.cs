@@ -17,11 +17,39 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
 {
     private readonly IdentifierResolver _resolver = new(context.AuthenticationCredentialsProviders);
     
-    [Webhook("On files added", typeof(PushEventHandler), Description = "Triggers for each new file added to the repository")]
+    [Webhook("On files added", typeof(PushEventHandler), 
+        Description = "Triggers for each new file added to the repository")]
     public async Task<WebhookResponse<SearchFilesResponse>> OnFilesAdded(
         WebhookRequest webhookRequest,
         [WebhookParameter(true)] OptionalWorkspaceIdentifier workspaceIdentifier,
         [WebhookParameter(true)] OptionalRepositoryIdentifier repositoryIdentifier)
+    {
+        return await ProcessFileWebhook(
+            webhookRequest, 
+            workspaceIdentifier.WorkspaceUuid, 
+            repositoryIdentifier.RepositoryUuid,
+            ["added"]);
+    }
+    
+    [Webhook("On files added or modified", typeof(PushEventHandler), 
+        Description = "Triggers for each new file added to the repository or when an existing file is modified")]
+    public async Task<WebhookResponse<SearchFilesResponse>> OnFilesAddedOrModified(
+        WebhookRequest webhookRequest,
+        [WebhookParameter(true)] OptionalWorkspaceIdentifier workspaceIdentifier,
+        [WebhookParameter(true)] OptionalRepositoryIdentifier repositoryIdentifier)
+    {
+        return await ProcessFileWebhook(
+            webhookRequest, 
+            workspaceIdentifier.WorkspaceUuid, 
+            repositoryIdentifier.RepositoryUuid,
+            ["added", "modified"]);
+    }
+
+    private async Task<WebhookResponse<SearchFilesResponse>> ProcessFileWebhook(
+        WebhookRequest webhookRequest,
+        string? workspaceIdentifier,
+        string? repositoryIdentifier,
+        List<string> fileStatuses)
     {
         var payload = webhookRequest.GetPayload<PushPayload>();
         
@@ -33,14 +61,14 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
         if (string.IsNullOrEmpty(newHash))
             return await Preflight<SearchFilesResponse>();
         
-        string workspaceUuid = _resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
-        string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
+        string workspaceUuid = _resolver.ResolveWorkspaceUuid(workspaceIdentifier);
+        string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier);
         
         var request = new BitbucketCloudRequest($"repositories/{workspaceUuid}/{repositoryUuid}/diffstat/{newHash}");
         var response = await Client.Paginate<DiffstatEntity>(request);
 
         var newFiles = response
-            .Where(x => x.Status == "added" && x.NewFile is not null)
+            .Where(x => fileStatuses.Contains(x.Status) && x.NewFile is not null)
             .Select(x => new FileResponse(x.NewFile!))
             .ToList();
         
