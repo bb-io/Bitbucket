@@ -29,22 +29,19 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
         if (latestChange is null)
             return await Preflight<SearchFilesResponse>();
         
-        string? oldHash = latestChange.Old?.Target?.Hash;
         string? newHash = latestChange.New?.Target?.Hash;
         if (string.IsNullOrEmpty(newHash))
             return await Preflight<SearchFilesResponse>();
-
-        string diffSpec = string.IsNullOrEmpty(oldHash) ? newHash : $"{oldHash}..{newHash}";
         
         string workspaceUuid = _resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
         string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
         
-        var request = new BitbucketCloudRequest($"repositories/{workspaceUuid}/{repositoryUuid}/diffstat/{diffSpec}");
+        var request = new BitbucketCloudRequest($"repositories/{workspaceUuid}/{repositoryUuid}/diffstat/{newHash}");
         var response = await Client.Paginate<DiffstatEntity>(request);
 
         var newFiles = response
-            .Where(x => x.Status == "added")
-            .Select(x => new FileResponse(x.NewFile))
+            .Where(x => x.Status == "added" && x.NewFile is not null)
+            .Select(x => new FileResponse(x.NewFile!))
             .ToList();
         
         if (newFiles.Count == 0)
