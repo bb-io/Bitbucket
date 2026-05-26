@@ -12,11 +12,17 @@ public class ConnectionValidatorTests : TestBaseMultipleConnections
     [TestMethod, TargetConnections]
     public async Task ValidateConnection_ValidData_ShouldBeSuccessful(InvocationContext invocationContext)
     {
+        // Arrange
         var validator = new ConnectionValidator(invocationContext);
-        
-        var tasks = CredentialGroups.Select(x => validator.ValidateConnection(x, CancellationToken.None).AsTask());
-        var results = await Task.WhenAll(tasks);
-        Assert.IsTrue(results.All(x => x.IsValid));
+        var credentials = invocationContext.AuthenticationCredentialsProviders
+            .Select(x => new AuthenticationCredentialsProvider(x.KeyName, x.Value));
+
+        // Act
+        var result = await validator.ValidateConnection(credentials, CancellationToken.None);
+
+        // Assert
+        TestContext?.WriteLine(result.Message);
+        Assert.IsTrue(result.IsValid);
     }
 
     [TestMethod, TargetConnections]

@@ -37,8 +37,8 @@ public class ConnectionDefinition : IConnectionDefinition
             AuthenticationType = ConnectionAuthenticationType.Undefined,
             ConnectionProperties = new List<ConnectionProperty>
             {
-                new(CredsNames.WorkspaceUuid) { DisplayName = "Workspace UUID" },
-                new(CredsNames.RepositoryUuid) { DisplayName = "Repository UUID" },
+                new(CredsNames.WorkspaceUuid) { DisplayName = "Workspace UUID or name" },
+                new(CredsNames.RepositoryUuid) { DisplayName = "Repository UUID or name" },
                 new(CredsNames.AccessToken) { DisplayName = "Access token", Sensitive = true }
             }
         }

@@ -11,8 +11,8 @@
       },
       {
         "ConnectionType": "Repository access token",
-        "WorkspaceUuid": "{...}",
-        "RepositoryUuid": "{...}",
+        "WorkspaceUuid": "",
+        "RepositoryUuid": "",
         "AccessToken": ""
       }
   ],
