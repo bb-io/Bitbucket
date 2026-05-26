@@ -48,6 +48,38 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
             branchIdentifier.BranchName,
             ["added", "modified"]);
     }
+    
+    [Webhook("On files modified", typeof(PushEventHandler), 
+        Description = "Triggers when an existing file is modified")]
+    public async Task<WebhookResponse<SearchFilesResponse>> OnFilesModified(
+        WebhookRequest webhookRequest,
+        [WebhookParameter(true)] OptionalWorkspaceIdentifier workspaceIdentifier,
+        [WebhookParameter(true)] OptionalRepositoryIdentifier repositoryIdentifier,
+        [WebhookParameter] OptionalBranchIdentifier branchIdentifier)
+    {
+        return await ProcessFileWebhook(
+            webhookRequest, 
+            workspaceIdentifier.WorkspaceUuid, 
+            repositoryIdentifier.RepositoryUuid,
+            branchIdentifier.BranchName,
+            ["modified"]);
+    }
+    
+    [Webhook("On files removed", typeof(PushEventHandler), 
+        Description = "Triggers when an existing file is removed")]
+    public async Task<WebhookResponse<SearchFilesResponse>> OnFilesRemoved(
+        WebhookRequest webhookRequest,
+        [WebhookParameter(true)] OptionalWorkspaceIdentifier workspaceIdentifier,
+        [WebhookParameter(true)] OptionalRepositoryIdentifier repositoryIdentifier,
+        [WebhookParameter] OptionalBranchIdentifier branchIdentifier)
+    {
+        return await ProcessFileWebhook(
+            webhookRequest, 
+            workspaceIdentifier.WorkspaceUuid, 
+            repositoryIdentifier.RepositoryUuid,
+            branchIdentifier.BranchName,
+            ["removed"]);
+    }
 
     private async Task<WebhookResponse<SearchFilesResponse>> ProcessFileWebhook(
         WebhookRequest webhookRequest,
