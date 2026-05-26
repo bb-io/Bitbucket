@@ -18,14 +18,15 @@ public class WebhookTests : TestBaseMultipleConnections
         var webhookRequest = CreateWebhookRequest("push_payload.json");
         var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
         var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
-
+        var branchRequest = new OptionalBranchIdentifier { BranchName = "main" };
+        
         // Act
-        var result = await webhookList.OnFilesAdded(webhookRequest, workspaceRequest, repositoryRequest);
+        var result = await webhookList.OnFilesAdded(webhookRequest, workspaceRequest, repositoryRequest, branchRequest);
 
         // Assert
         PrintResult(result);
-        Assert.IsNotNull(result.Result);
-        Assert.IsNotEmpty(result.Result.Files);
+        Assert.IsNotNull(result.Result, "The result is null");
+        Assert.IsNotEmpty(result.Result.Files, "No files returned");
     }
     
     private static WebhookRequest CreateWebhookRequest(string fileName)

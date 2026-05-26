@@ -22,12 +22,14 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
     public async Task<WebhookResponse<SearchFilesResponse>> OnFilesAdded(
         WebhookRequest webhookRequest,
         [WebhookParameter(true)] OptionalWorkspaceIdentifier workspaceIdentifier,
-        [WebhookParameter(true)] OptionalRepositoryIdentifier repositoryIdentifier)
+        [WebhookParameter(true)] OptionalRepositoryIdentifier repositoryIdentifier,
+        [WebhookParameter] OptionalBranchIdentifier branchIdentifier)
     {
         return await ProcessFileWebhook(
             webhookRequest, 
             workspaceIdentifier.WorkspaceUuid, 
             repositoryIdentifier.RepositoryUuid,
+            branchIdentifier.BranchName,
             ["added"]);
     }
     
@@ -36,12 +38,14 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
     public async Task<WebhookResponse<SearchFilesResponse>> OnFilesAddedOrModified(
         WebhookRequest webhookRequest,
         [WebhookParameter(true)] OptionalWorkspaceIdentifier workspaceIdentifier,
-        [WebhookParameter(true)] OptionalRepositoryIdentifier repositoryIdentifier)
+        [WebhookParameter(true)] OptionalRepositoryIdentifier repositoryIdentifier,
+        [WebhookParameter] OptionalBranchIdentifier branchIdentifier)
     {
         return await ProcessFileWebhook(
             webhookRequest, 
             workspaceIdentifier.WorkspaceUuid, 
             repositoryIdentifier.RepositoryUuid,
+            branchIdentifier.BranchName,
             ["added", "modified"]);
     }
 
@@ -49,6 +53,7 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
         WebhookRequest webhookRequest,
         string? workspaceIdentifier,
         string? repositoryIdentifier,
+        string? branchName,
         List<string> fileStatuses)
     {
         var payload = webhookRequest.GetPayload<PushPayload>();
@@ -60,6 +65,13 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
         string? newHash = latestChange.New?.Target?.Hash;
         if (string.IsNullOrEmpty(newHash))
             return await Preflight<SearchFilesResponse>();
+
+        string actualBranchName = latestChange.New?.Name ?? string.Empty;
+        if (!string.IsNullOrWhiteSpace(branchName) && 
+            !string.Equals(branchName, actualBranchName, StringComparison.OrdinalIgnoreCase))
+        {
+            return await Preflight<SearchFilesResponse>();
+        }
         
         string workspaceUuid = _resolver.ResolveWorkspaceUuid(workspaceIdentifier);
         string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier);
