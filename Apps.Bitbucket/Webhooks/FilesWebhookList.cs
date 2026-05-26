@@ -111,15 +111,17 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
         var request = new BitbucketCloudRequest($"repositories/{workspaceUuid}/{repositoryUuid}/diffstat/{newHash}");
         var response = await Client.Paginate<DiffstatEntity>(request);
 
-        var newFiles = response
-            .Where(x => fileStatuses.Contains(x.Status) && x.NewFile is not null)
-            .Select(x => new FileResponse(x.NewFile!))
+        var targetFiles = response
+            .Where(x => fileStatuses.Contains(x.Status))
+            .Select(x => x.NewFile ?? x.OldFile)
+            .Where(file => file is not null)
+            .Select(file => new FileResponse(file!))
             .ToList();
-        
-        if (newFiles.Count == 0)
+    
+        if (targetFiles.Count == 0)
             return await Preflight<SearchFilesResponse>();
-        
-        return await Success<SearchFilesResponse>(new(newFiles));
+    
+        return await Success(new SearchFilesResponse(targetFiles));
     }
     
     private static Task<WebhookResponse<T>> Preflight<T>() where T : class

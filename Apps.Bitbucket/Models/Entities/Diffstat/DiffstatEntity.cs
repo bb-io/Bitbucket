@@ -10,4 +10,7 @@ public class DiffstatEntity
 
     [JsonProperty("new")]
     public FileEntity? NewFile { get; set; }
+    
+    [JsonProperty("old")]
+    public FileEntity? OldFile { get; set; }
 }
