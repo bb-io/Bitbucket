@@ -22,7 +22,7 @@ public class UserActions : BitbucketInvocable
     }
 
     // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-users/#api-user-get
-    [Action("Get my user", Description = "Get information of my user")]
+    [Action("Get my user", Description = "Get information about my user")]
     public async Task<UserResponse> GetMyUser()
     {
         var request = new BitbucketCloudRequest("user");
