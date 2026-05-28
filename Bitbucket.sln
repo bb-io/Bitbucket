@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apps.Bitbucket", "Apps.Bitbucket\Apps.Bitbucket.csproj", "{E38039E6-7F35-4A5C-ACE5-7AD5AD9BCEE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Bitbucket", "Tests.Bitbucket\Tests.Bitbucket.csproj", "{F825556B-0149-4005-BF8D-314507198D13}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{7935735E-7C36-49D1-AB0B-0DCA40091BBB}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E38039E6-7F35-4A5C-ACE5-7AD5AD9BCEE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E38039E6-7F35-4A5C-ACE5-7AD5AD9BCEE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E38039E6-7F35-4A5C-ACE5-7AD5AD9BCEE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E38039E6-7F35-4A5C-ACE5-7AD5AD9BCEE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F825556B-0149-4005-BF8D-314507198D13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F825556B-0149-4005-BF8D-314507198D13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F825556B-0149-4005-BF8D-314507198D13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F825556B-0149-4005-BF8D-314507198D13}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

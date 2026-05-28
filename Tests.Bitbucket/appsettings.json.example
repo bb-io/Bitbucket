@@ -1,0 +1,20 @@
+{
+  "ConnectionDefinition": [
+      {
+        "ConnectionType": "API Token",
+        "Username": "",
+        "ApiToken": ""
+      },
+      {
+        "ConnectionType": "OAuth2",
+        "AccessToken": "Bearer ..."
+      },
+      {
+        "ConnectionType": "Repository access token",
+        "WorkspaceUuid": "",
+        "RepositoryUuid": "",
+        "AccessToken": ""
+      }
+  ],
+  "TestFolder": "TestFiles"
+}
