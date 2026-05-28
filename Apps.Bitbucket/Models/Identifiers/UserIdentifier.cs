@@ -6,6 +6,6 @@ namespace Apps.Bitbucket.Models.Identifiers;
 
 public class UserIdentifier
 {
-    [Display("User UUID"), DataSource(typeof(UserDataHandler))]
+    [Display("User ID"), DataSource(typeof(UserDataHandler))]
     public string UserUuid { get; set; } = string.Empty;
 }

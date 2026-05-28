@@ -31,7 +31,7 @@ public record PullRequestResponse
     [Display("Pull request state")]
     public string State { get; set; }
 
-    [Display("Author user UUID")]
+    [Display("Author user ID")]
     public string AuthorUuid { get; set; }
 
     [Display("Comment count")] 
@@ -43,7 +43,7 @@ public record PullRequestResponse
     [Display("Close branch upon merging")]
     public bool CloseBranchUponMerging { get; set; }
 
-    [Display("Closed by user UUID")] 
+    [Display("Closed by user ID")] 
     public string? ClosedByUuid { get; set; }
 
     [Display("Created on")]

@@ -11,7 +11,7 @@ using Blackbird.Applications.Sdk.Common.Invocation;
 
 namespace Apps.Bitbucket.Actions;
 
-[ActionList("Repository")]
+[ActionList("Repositories")]
 public class RepositoryActions(InvocationContext invocationContext) : BitbucketInvocable(invocationContext)
 {
     private readonly IdentifierResolver _resolver = new(invocationContext.AuthenticationCredentialsProviders);

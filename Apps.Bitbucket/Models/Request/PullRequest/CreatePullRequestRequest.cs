@@ -16,7 +16,7 @@ public class CreatePullRequestRequest
     [DataSource(typeof(BranchDataHandler))]
     public string? TargetBranchName { get; set; }
 
-    [Display("Reviewer UUIDs"), DataSource(typeof(UserDataHandler))]
+    [Display("Reviewer IDs"), DataSource(typeof(UserDataHandler))]
     public IEnumerable<string>? ReviewerUuids { get; set; }
 
     [Display("Description")]

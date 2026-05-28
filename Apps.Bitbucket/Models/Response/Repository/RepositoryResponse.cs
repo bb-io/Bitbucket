@@ -22,7 +22,7 @@ public record RepositoryResponse
         Language = string.IsNullOrWhiteSpace(repositoryEntity.Language) ? null : repositoryEntity.Language;
     }
 
-    [Display("Repository UUID")] 
+    [Display("Repository ID")] 
     public string Uuid { get; set; }
 
     [Display("Repository full name")] 
@@ -37,7 +37,7 @@ public record RepositoryResponse
     [Display("Is private")]
     public bool IsPrivate { get; set; }
 
-    [Display("Owner UUID")]
+    [Display("Owner ID")]
     public string OwnerUuid { get; set; }
     
     [Display("Owner display name")]

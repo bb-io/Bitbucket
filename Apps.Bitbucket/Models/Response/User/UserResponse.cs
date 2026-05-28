@@ -12,7 +12,7 @@ public record UserResponse
         DisplayName = userEntity.DisplayName;
     }
 
-    [Display("User UUID")] 
+    [Display("User ID")] 
     public string Uuid { get; set; }
 
     [Display("Created on")] 

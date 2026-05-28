@@ -6,6 +6,6 @@ namespace Apps.Bitbucket.Models.Identifiers.Optional;
 
 public class OptionalRepositoryIdentifier
 {
-    [Display("Repository UUID"), DataSource(typeof(RepositoryDataHandler))]
+    [Display("Repository ID"), DataSource(typeof(RepositoryDataHandler))]
     public string? RepositoryUuid { get; set; } = string.Empty;
 }

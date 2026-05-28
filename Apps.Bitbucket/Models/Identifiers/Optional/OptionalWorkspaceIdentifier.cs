@@ -6,6 +6,6 @@ namespace Apps.Bitbucket.Models.Identifiers.Optional;
 
 public class OptionalWorkspaceIdentifier
 {
-    [Display("Workspace UUID"), DataSource(typeof(WorkspaceDataHandler))]
+    [Display("Workspace ID"), DataSource(typeof(WorkspaceDataHandler))]
     public string? WorkspaceUuid { get; set; }
 }
