@@ -1,4 +1,5 @@
-﻿using Apps.Bitbucket.Api;
+﻿using System.Net;
+using Apps.Bitbucket.Api;
 using Apps.Bitbucket.Api.Request;
 using Apps.Bitbucket.Constants;
 using Blackbird.Applications.Sdk.Common;
@@ -12,16 +13,20 @@ namespace Apps.Bitbucket.Connections;
 public class ConnectionValidator(InvocationContext invocationContext) : BaseInvocable(invocationContext), IConnectionValidator
 {
     public async ValueTask<ConnectionValidationResponse> ValidateConnection(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        IEnumerable<AuthenticationCredentialsProvider> creds,
         CancellationToken cancellationToken)
     {
         try
         {
-            var client = new BitbucketClient(authenticationCredentialsProviders);
+            var client = new BitbucketClient(creds);
             BitbucketCloudRequest request = CreateValidationRequest(InvocationContext.AuthenticationCredentialsProviders);
             var response = await client.ExecuteAsync(request, cancellationToken);
 
-            var isValid = response.IsSuccessStatusCode;
+            var isValid =
+                response.StatusCode != HttpStatusCode.Unauthorized &&
+                response.StatusCode != HttpStatusCode.Forbidden &&
+                response.StatusCode != HttpStatusCode.NotFound;
+            
             return new ConnectionValidationResponse
             {
                 IsValid = isValid,
