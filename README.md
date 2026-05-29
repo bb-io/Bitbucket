@@ -119,6 +119,26 @@ due to the limited scopes these tokens have.
 - **On files modified**. Triggers when an existing file is modified.
 - **On files removed**. Triggers when an existing file is removed.
 
+## Demo video
+
+[In this demo](https://www.youtube.com/watch?v=1c7Qg4_7pXQ), see how Blackbird.io automates localization workflows directly from Bitbucket repositories.
+
+We’ll walk through a simple but powerful Git-based translation process where content updates in Bitbucket automatically trigger machine translation workflows using DeepL, then commit translated content back into the repository.
+
+In this demo you’ll see how to:
+
+- Detect new or modified content in Bitbucket
+- Automatically download and process localization files
+- Send content to DeepL for machine translation
+- Commit translated content back into Bitbucket
+- Configure multilingual workflows using variables and loops
+- Dynamically manage folders, filenames, and commit messages
+- Extend workflows with AI, PR automation, Jira, Confluence, Notion, and more
+
+This demo highlights how Blackbird.io can orchestrate localization and developer workflows across repositories, AI tools, TMS platforms, and enterprise systems — all in a flexible visual automation platform.
+
+[![Watch the video](https://img.youtube.com/vi/1c7Qg4_7pXQ/0.jpg)](https://www.youtube.com/watch?v=1c7Qg4_7pXQ)
+
 ## Missing features
 
 Workspace and project access tokens are not supported in this app. Let us know if you'd like us to add them.
