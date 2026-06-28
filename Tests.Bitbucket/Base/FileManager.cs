@@ -11,7 +11,8 @@ public class FileManager : IFileManagementClient
     public FileManager()
     {
         var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        var projectDirectory = Directory.GetParent(baseDirectory).Parent.Parent.Parent.FullName;
+        var projectDirectory = Directory.GetParent(baseDirectory)?.Parent?.Parent?.FullName
+            ?? throw new InvalidOperationException("Could not determine project directory.");
 
 
         var testFilesPath = Path.Combine(projectDirectory, "TestFiles");
@@ -36,7 +37,7 @@ public class FileManager : IFileManagementClient
     public Task<FileReference> UploadAsync(Stream stream, string contentType, string fileName)
     {
         var path = Path.Combine(outputFolder, fileName);
-        new FileInfo(path).Directory.Create();
+        new FileInfo(path).Directory?.Create();
         using (var fileStream = File.Create(path))
         {
             stream.CopyTo(fileStream);
@@ -45,4 +46,3 @@ public class FileManager : IFileManagementClient
         return Task.FromResult(new FileReference() { Name = fileName, ContentType = contentType });
     }
 }
-
