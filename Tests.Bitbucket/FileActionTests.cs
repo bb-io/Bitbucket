@@ -11,14 +11,19 @@ namespace Tests.Bitbucket;
 [TestClass]
 public class FileActionTests : TestBaseMultipleConnections 
 {
+    private const string SlashyBranchWorkspaceUuid = "{83c14ef0-d1a9-41c3-90ae-0d601a700a22}";
+    private const string SlashyBranchRepositoryUuid = "{6c4ba8d8-2fc6-4b10-89ee-c26274a11852}";
+    private const string SlashyBranchName = "feature/demoing";
+    private const string SlashyBranchFilePath = "locales/en-US.json";
+
     [TestMethod, TargetConnections]
     public async Task DownloadFile_IsSuccess(InvocationContext invocationContext)
     {
         var actions = new FileActions(invocationContext, FileManager);
-        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
-        var branchRequest = new OptionalBranchIdentifier { BranchName = "dev" };
-        var filePathRequest = new FilePathIdentifier { FilePath = "123/hi.txt" };
+        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = SlashyBranchWorkspaceUuid };
+        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = SlashyBranchRepositoryUuid };
+        var branchRequest = new OptionalBranchIdentifier { BranchName = SlashyBranchName };
+        var filePathRequest = new FilePathIdentifier { FilePath = SlashyBranchFilePath };
 
         var result = await actions.DownloadFile(
             workspaceRequest, 
@@ -61,10 +66,10 @@ public class FileActionTests : TestBaseMultipleConnections
     public async Task FileExists_ExistingFile_ReturnsTrue(InvocationContext invocationContext)
     {
         var actions = new FileActions(invocationContext, FileManager);
-        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
-        var branchRequest = new OptionalBranchIdentifier { BranchName = "dev" };
-        var fileIdentifier = new FilePathIdentifier { FilePath = "hello.txt" };
+        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = SlashyBranchWorkspaceUuid };
+        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = SlashyBranchRepositoryUuid };
+        var branchRequest = new OptionalBranchIdentifier { BranchName = SlashyBranchName };
+        var fileIdentifier = new FilePathIdentifier { FilePath = SlashyBranchFilePath };
 
         var result = await actions.FileExists(workspaceRequest, repositoryRequest, branchRequest, fileIdentifier);
 
@@ -75,10 +80,10 @@ public class FileActionTests : TestBaseMultipleConnections
     public async Task FileExists_NonExistingFile_ReturnsFalse(InvocationContext invocationContext)
     {
         var actions = new FileActions(invocationContext, FileManager);
-        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
-        var branchRequest = new OptionalBranchIdentifier { BranchName = "dev" };
-        var fileIdentifier = new FilePathIdentifier { FilePath = "hello1.txt" };
+        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = SlashyBranchWorkspaceUuid };
+        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = SlashyBranchRepositoryUuid };
+        var branchRequest = new OptionalBranchIdentifier { BranchName = SlashyBranchName };
+        var fileIdentifier = new FilePathIdentifier { FilePath = "locales/not-found.json" };
 
         var result = await actions.FileExists(workspaceRequest, repositoryRequest, branchRequest, fileIdentifier);
 
@@ -111,10 +116,10 @@ public class FileActionTests : TestBaseMultipleConnections
     public async Task SearchFiles_ReturnsFiles(InvocationContext invocationContext)
     {
         var actions = new FileActions(invocationContext, FileManager);
-        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
-        var branchRequest = new OptionalBranchIdentifier { BranchName = "dev" };
-        var optionalFolderPathIdentifier = new OptionalFolderPathIdentifier { FolderPath = "123" };
+        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = SlashyBranchWorkspaceUuid };
+        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = SlashyBranchRepositoryUuid };
+        var branchRequest = new OptionalBranchIdentifier { BranchName = SlashyBranchName };
+        var optionalFolderPathIdentifier = new OptionalFolderPathIdentifier { FolderPath = "locales" };
         var searchFilesRequest = new SearchFilesRequest
         {
             IncludeSubfolders = true,

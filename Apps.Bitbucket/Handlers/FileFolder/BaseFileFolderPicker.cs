@@ -13,7 +13,7 @@ public class BaseFileFolderPicker : BitbucketInvocable
 {
     private readonly string _workspaceId;
     private readonly string _repositoryId;
-    private readonly string _branchName;
+    private readonly OptionalBranchIdentifier _branchIdentifier;
 
     protected BaseFileFolderPicker(InvocationContext context,
         OptionalWorkspaceIdentifier workspaceIdentifier,
@@ -25,7 +25,7 @@ public class BaseFileFolderPicker : BitbucketInvocable
         
         _workspaceId = resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
         _repositoryId = resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
-        _branchName = branchIdentifier.GetBranchName();
+        _branchIdentifier = branchIdentifier;
     }
 
     protected Task<IEnumerable<FolderPathItem>> GetFolderPathAsync(string? fileDataItemId)
@@ -56,8 +56,9 @@ public class BaseFileFolderPicker : BitbucketInvocable
         bool foldersAreSelectable)
     {
         string filePath = folderId ?? string.Empty;
+        string sourceRef = await _branchIdentifier.ResolveSourceRefAsync(Client, _workspaceId, _repositoryId);
         
-        var request = new BitbucketCloudRequest($"repositories/{_workspaceId}/{_repositoryId}/src/{_branchName}/{filePath}");
+        var request = new BitbucketCloudRequest($"repositories/{_workspaceId}/{_repositoryId}/src/{sourceRef}/{filePath}");
         var result = await Client.Paginate<FileEntity>(request);
         
         var listResult = result.ToList();
