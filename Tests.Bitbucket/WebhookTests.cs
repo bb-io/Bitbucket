@@ -19,9 +19,10 @@ public class WebhookTests : TestBaseMultipleConnections
         var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
         var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
         var branchRequest = new OptionalBranchIdentifier { BranchName = "main" };
+        var filepath = new OptionalFilepath();
         
         // Act
-        var result = await webhookList.OnFilesAdded(webhookRequest, workspaceRequest, repositoryRequest, branchRequest);
+        var result = await webhookList.OnFilesAdded(webhookRequest, workspaceRequest, repositoryRequest, branchRequest, filepath);
 
         // Assert
         PrintResult(result);

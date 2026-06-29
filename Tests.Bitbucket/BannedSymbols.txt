@@ -1,1 +1,0 @@
-T:System.Console;Please use TestContext.WriteLine so logs attach to the test results correctly.

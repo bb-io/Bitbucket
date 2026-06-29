@@ -1,13 +1,16 @@
 using System.Net;
+using System.Text.RegularExpressions;
 using Apps.Bitbucket.Api.Request;
 using Apps.Bitbucket.Extensions;
 using Apps.Bitbucket.Helper;
 using Apps.Bitbucket.Models.Entities.Diffstat;
+using Apps.Bitbucket.Models.Entities.File;
 using Apps.Bitbucket.Models.Identifiers.Optional;
 using Apps.Bitbucket.Models.Response.File;
 using Apps.Bitbucket.Webhooks.Handlers;
 using Apps.Bitbucket.Webhooks.Models.Payloads.Push;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Webhooks;
 
 namespace Apps.Bitbucket.Webhooks;
@@ -19,91 +22,97 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
     
     [Webhook("On files added", typeof(PushEventHandler), 
         Description = "Triggers for each new file added to the repository")]
-    public async Task<WebhookResponse<SearchFilesResponse>> OnFilesAdded(
+    public async Task<WebhookResponse<SearchFileWebhookResponse>> OnFilesAdded(
         WebhookRequest webhookRequest,
         [WebhookParameter(true)] OptionalWorkspaceIdentifier workspaceIdentifier,
         [WebhookParameter(true)] OptionalRepositoryIdentifier repositoryIdentifier,
-        [WebhookParameter] OptionalBranchIdentifier branchIdentifier)
+        [WebhookParameter] OptionalBranchIdentifier branchIdentifier,
+        [WebhookParameter] OptionalFilepath filepath)
     {
         return await ProcessFileWebhook(
             webhookRequest, 
             workspaceIdentifier.WorkspaceUuid, 
             repositoryIdentifier.RepositoryUuid,
-            branchIdentifier.BranchName,
+            branchIdentifier,
+            filepath,
             ["added"]);
     }
     
     [Webhook("On files added or modified", typeof(PushEventHandler), 
         Description = "Triggers for each new file added to the repository or when an existing file is modified")]
-    public async Task<WebhookResponse<SearchFilesResponse>> OnFilesAddedOrModified(
+    public async Task<WebhookResponse<SearchFileWebhookResponse>> OnFilesAddedOrModified(
         WebhookRequest webhookRequest,
         [WebhookParameter(true)] OptionalWorkspaceIdentifier workspaceIdentifier,
         [WebhookParameter(true)] OptionalRepositoryIdentifier repositoryIdentifier,
-        [WebhookParameter] OptionalBranchIdentifier branchIdentifier)
+        [WebhookParameter] OptionalBranchIdentifier branchIdentifier,
+        [WebhookParameter] OptionalFilepath filepath)
     {
         return await ProcessFileWebhook(
             webhookRequest, 
             workspaceIdentifier.WorkspaceUuid, 
             repositoryIdentifier.RepositoryUuid,
-            branchIdentifier.BranchName,
+            branchIdentifier,
+            filepath,
             ["added", "modified"]);
     }
     
     [Webhook("On files modified", typeof(PushEventHandler), 
         Description = "Triggers when an existing file is modified")]
-    public async Task<WebhookResponse<SearchFilesResponse>> OnFilesModified(
+    public async Task<WebhookResponse<SearchFileWebhookResponse>> OnFilesModified(
         WebhookRequest webhookRequest,
         [WebhookParameter(true)] OptionalWorkspaceIdentifier workspaceIdentifier,
         [WebhookParameter(true)] OptionalRepositoryIdentifier repositoryIdentifier,
-        [WebhookParameter] OptionalBranchIdentifier branchIdentifier)
+        [WebhookParameter] OptionalBranchIdentifier branchIdentifier,
+        [WebhookParameter] OptionalFilepath filepath)
     {
         return await ProcessFileWebhook(
             webhookRequest, 
             workspaceIdentifier.WorkspaceUuid, 
             repositoryIdentifier.RepositoryUuid,
-            branchIdentifier.BranchName,
+            branchIdentifier,
+            filepath,
             ["modified"]);
     }
     
     [Webhook("On files removed", typeof(PushEventHandler), 
         Description = "Triggers when an existing file is removed")]
-    public async Task<WebhookResponse<SearchFilesResponse>> OnFilesRemoved(
+    public async Task<WebhookResponse<SearchFileWebhookResponse>> OnFilesRemoved(
         WebhookRequest webhookRequest,
         [WebhookParameter(true)] OptionalWorkspaceIdentifier workspaceIdentifier,
         [WebhookParameter(true)] OptionalRepositoryIdentifier repositoryIdentifier,
-        [WebhookParameter] OptionalBranchIdentifier branchIdentifier)
+        [WebhookParameter] OptionalBranchIdentifier branchIdentifier,
+        [WebhookParameter] OptionalFilepath filepath)
     {
         return await ProcessFileWebhook(
             webhookRequest, 
             workspaceIdentifier.WorkspaceUuid, 
             repositoryIdentifier.RepositoryUuid,
-            branchIdentifier.BranchName,
+            branchIdentifier,
+            filepath,
             ["removed"]);
     }
 
-    private async Task<WebhookResponse<SearchFilesResponse>> ProcessFileWebhook(
+    private async Task<WebhookResponse<SearchFileWebhookResponse>> ProcessFileWebhook(
         WebhookRequest webhookRequest,
         string? workspaceIdentifier,
         string? repositoryIdentifier,
-        string? branchName,
+        OptionalBranchIdentifier branchIdentifier,
+        OptionalFilepath filepath,
         List<string> fileStatuses)
     {
         var payload = webhookRequest.GetPayload<PushPayload>();
         
         var latestChange = payload.Push.Changes.FirstOrDefault();
         if (latestChange is null)
-            return await Preflight<SearchFilesResponse>();
+            return await Preflight<SearchFileWebhookResponse>();
         
         string? newHash = latestChange.New?.Target?.Hash;
         if (string.IsNullOrEmpty(newHash))
-            return await Preflight<SearchFilesResponse>();
+            return await Preflight<SearchFileWebhookResponse>();
 
         string actualBranchName = latestChange.New?.Name ?? string.Empty;
-        if (!string.IsNullOrWhiteSpace(branchName) && 
-            !string.Equals(branchName, actualBranchName, StringComparison.OrdinalIgnoreCase))
-        {
-            return await Preflight<SearchFilesResponse>();
-        }
+        if (!BranchMatches(actualBranchName, branchIdentifier))
+            return await Preflight<SearchFileWebhookResponse>();
         
         string workspaceUuid = _resolver.ResolveWorkspaceUuid(workspaceIdentifier);
         string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier);
@@ -115,13 +124,96 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
             .Where(x => fileStatuses.Contains(x.Status))
             .Select(x => x.NewFile ?? x.OldFile)
             .Where(file => file is not null)
-            .Select(file => new FileResponse(file!))
+            .Select(file => CreateFileResponse(file!, filepath?.FilePathPatterns, actualBranchName))
+            .Where(file => file is not null)
+            .Select(file => file!)
             .ToList();
     
         if (targetFiles.Count == 0)
-            return await Preflight<SearchFilesResponse>();
+            return await Preflight<SearchFileWebhookResponse>();
     
-        return await Success(new SearchFilesResponse(targetFiles));
+        return await Success(new SearchFileWebhookResponse(targetFiles));
+    }
+
+    public static bool BranchMatches(string actualBranchName, OptionalBranchIdentifier? branchIdentifier)
+    {
+        if (branchIdentifier is null)
+            return true;
+
+        if (!string.IsNullOrWhiteSpace(branchIdentifier.BranchName) &&
+            !string.Equals(branchIdentifier.BranchName, actualBranchName, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        var contains = branchIdentifier.BranchNameContains?
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => value.Trim())
+            .ToList() ?? [];
+
+        if (contains.Count > 0 &&
+            !contains.Any(value => actualBranchName.Contains(value, StringComparison.OrdinalIgnoreCase)))
+        {
+            return false;
+        }
+
+        var doesntContain = branchIdentifier.BranchNameDoesntContain?
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => value.Trim())
+            .ToList() ?? [];
+
+        return doesntContain.Count == 0 ||
+               !doesntContain.Any(value => actualBranchName.Contains(value, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public static FileWebhookResponse? CreateFileResponse(
+        FileEntity file,
+        IEnumerable<string>? rawPatterns,
+        string branchName)
+    {
+        var patterns = rawPatterns?
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => value.Trim())
+            .ToList() ?? [];
+
+        if (patterns.Count == 0)
+            return new(file, branchName, null);
+
+        foreach (var pattern in patterns)
+        {
+            Regex regex;
+            try
+            {
+                regex = new Regex(pattern);
+            }
+            catch (ArgumentException exception)
+            {
+                throw new PluginMisconfigurationException(
+                    $"Invalid file path regex pattern '{pattern}': {exception.Message}");
+            }
+
+            var groupNames = regex.GetGroupNames()
+                .Where(name => name != "0")
+                .ToList();
+
+            if (groupNames.Count > 1)
+            {
+                throw new PluginMisconfigurationException(
+                    $"File path regex pattern '{pattern}' must contain no more than one capture group.");
+            }
+
+            var match = regex.Match(file.Path);
+            if (!match.Success)
+                continue;
+
+            var extractedPart = groupNames.Count == 1
+                ? match.Groups[groupNames[0]].Value
+                : null;
+
+            return new(file, branchName, extractedPart);
+        }
+
+        return null;
     }
     
     private static Task<WebhookResponse<T>> Preflight<T>() where T : class
