@@ -119,6 +119,11 @@ due to the limited scopes these tokens have.
 - **On files modified**. Triggers when an existing file is modified.
 - **On files removed**. Triggers when an existing file is removed.
 
+File path pattern examples:
+
+- `^locales/([a-zA-Z]{2}-[a-zA-Z]{2})\.json$` matches files like `locales/en-US.json` and outputs `en-US` as the extracted part.
+- `^locales/en-US.json$` matches only the `locales/en-US.json` file and leaves the extracted part empty.
+
 ## Demo video
 
 [In this demo](https://www.youtube.com/watch?v=1c7Qg4_7pXQ), see how Blackbird.io automates localization workflows directly from Bitbucket repositories.

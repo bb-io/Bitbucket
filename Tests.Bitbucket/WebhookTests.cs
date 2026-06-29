@@ -11,25 +11,45 @@ namespace Tests.Bitbucket;
 public class WebhookTests : TestBaseMultipleConnections
 {
     [TestMethod, TargetConnections(ConnectionTypes.ApiToken)]
-    public async Task OnFilesAdded_IsSuccess(InvocationContext context)
+    public async Task OnFilesAddedOrModified_IsSuccess(InvocationContext context)
     {
         // Arrange
         var webhookList = new FilesWebhookList(context);
         var webhookRequest = CreateWebhookRequest("push_payload.json");
-        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{c025e168-8bea-4666-8685-03f1c5f61503}" };
-        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{06eefb5d-2f7b-4677-add7-c308b406155d}" };
-        var branchRequest = new OptionalBranchIdentifier { BranchName = "main" };
-        var filepath = new OptionalFilepath();
+        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{83c14ef0-d1a9-41c3-90ae-0d601a700a22}" };
+        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{6c4ba8d8-2fc6-4b10-89ee-c26274a11852}" };
+        var branchRequest = new OptionalBranchIdentifier { BranchNameContains = ["feature/"] };
+        var filepath = new OptionalFilepath() { FilePathPatterns = ["locales/([a-zA-z]{2}-[a-zA-z]{2}).json"] };
         
         // Act
-        var result = await webhookList.OnFilesAdded(webhookRequest, workspaceRequest, repositoryRequest, branchRequest, filepath);
+        var result = await webhookList.OnFilesAddedOrModified(webhookRequest, workspaceRequest, repositoryRequest, branchRequest, filepath);
 
         // Assert
         PrintResult(result);
         Assert.IsNotNull(result.Result, "The result is null");
         Assert.IsNotEmpty(result.Result.Files, "No files returned");
     }
-    
+
+    [TestMethod, TargetConnections(ConnectionTypes.ApiToken)]
+    public async Task OnFilesAddedOrModified_NoCaptureGroup_IsSuccess(InvocationContext context)
+    {
+        // Arrange
+        var webhookList = new FilesWebhookList(context);
+        var webhookRequest = CreateWebhookRequest("push_payload.json");
+        var workspaceRequest = new OptionalWorkspaceIdentifier { WorkspaceUuid = "{83c14ef0-d1a9-41c3-90ae-0d601a700a22}" };
+        var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{6c4ba8d8-2fc6-4b10-89ee-c26274a11852}" };
+        var branchRequest = new OptionalBranchIdentifier { BranchNameContains = ["feature/"] };
+        var filepath = new OptionalFilepath() { FilePathPatterns = ["locales/en-US.json"] };
+
+        // Act
+        var result = await webhookList.OnFilesAddedOrModified(webhookRequest, workspaceRequest, repositoryRequest, branchRequest, filepath);
+
+        // Assert
+        PrintResult(result);
+        Assert.IsNotNull(result.Result, "The result is null");
+        Assert.IsNotEmpty(result.Result.Files, "No files returned");
+    }
+
     private static WebhookRequest CreateWebhookRequest(string fileName)
     {
         var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
