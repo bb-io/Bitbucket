@@ -8,6 +8,7 @@ using Apps.Bitbucket.Models.Entities.File;
 using Apps.Bitbucket.Models.Identifiers.Optional;
 using Apps.Bitbucket.Models.Response.File;
 using Apps.Bitbucket.Webhooks.Handlers;
+using Apps.Bitbucket.Webhooks.Models.Entity.Push;
 using Apps.Bitbucket.Webhooks.Models.Payloads.Push;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.Sdk.Common.Exceptions;
@@ -113,6 +114,8 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
         string actualBranchName = latestChange.New?.Name ?? string.Empty;
         if (!BranchMatches(actualBranchName, branchIdentifier))
             return await Preflight<SearchFileWebhookResponse>();
+
+        var commitMessage = GetCommitMessage(latestChange);
         
         string workspaceUuid = _resolver.ResolveWorkspaceUuid(workspaceIdentifier);
         string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier);
@@ -124,7 +127,7 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
             .Where(x => fileStatuses.Contains(x.Status))
             .Select(x => x.NewFile ?? x.OldFile)
             .Where(file => file is not null)
-            .Select(file => CreateFileResponse(file!, filepath?.FilePathPatterns, actualBranchName))
+            .Select(file => CreateFileResponse(file!, filepath?.FilePathPatterns, actualBranchName, commitMessage))
             .Where(file => file is not null)
             .Select(file => file!)
             .ToList();
@@ -169,7 +172,8 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
     public static FileWebhookResponse? CreateFileResponse(
         FileEntity file,
         IEnumerable<string>? rawPatterns,
-        string branchName)
+        string branchName,
+        string? commitMessage = null)
     {
         var patterns = rawPatterns?
             .Where(value => !string.IsNullOrWhiteSpace(value))
@@ -177,7 +181,7 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
             .ToList() ?? [];
 
         if (patterns.Count == 0)
-            return new(file, branchName, null);
+            return new(file, branchName, null, commitMessage);
 
         foreach (var pattern in patterns)
         {
@@ -210,10 +214,22 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
                 ? match.Groups[groupNames[0]].Value
                 : null;
 
-            return new(file, branchName, extractedPart);
+            return new(file, branchName, extractedPart, commitMessage);
         }
 
         return null;
+    }
+
+    public static string? GetCommitMessage(Change change)
+    {
+        var messages = change.Commits
+            .Select(commit => commit.Message?.Trim())
+            .Where(message => !string.IsNullOrWhiteSpace(message))
+            .ToList();
+
+        return messages.Count == 0
+            ? null
+            : string.Join(Environment.NewLine, messages);
     }
     
     private static Task<WebhookResponse<T>> Preflight<T>() where T : class

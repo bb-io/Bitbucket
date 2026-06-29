@@ -1,6 +1,7 @@
 using Apps.Bitbucket.Models.Entities.File;
 using Apps.Bitbucket.Models.Identifiers.Optional;
 using Apps.Bitbucket.Webhooks;
+using Apps.Bitbucket.Webhooks.Models.Entity.Push;
 using Blackbird.Applications.Sdk.Common.Exceptions;
 
 namespace Tests.Bitbucket;
@@ -84,6 +85,21 @@ public class FileWebhookListTests
         Assert.AreEqual("en_US", result.ExtractedPart);
         Assert.AreEqual("commit_file", result.Type);
         Assert.AreEqual("feature/new-login", result.BranchName);
+    }
+
+    [TestMethod]
+    public void CreateFileResponse_IncludesCommitMessage()
+    {
+        var file = new FileEntity { Type = "commit_file", Path = "/locales/en_US.json" };
+
+        var result = FilesWebhookList.CreateFileResponse(
+            file,
+            [@"/locales/([a-z]{2}_[A-Z]{2})\.json$"],
+            "feature/new-login",
+            "Add English locale");
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual("Add English locale", result.CommitMessage);
     }
 
     [TestMethod]
@@ -183,5 +199,22 @@ public class FileWebhookListTests
         catch (PluginMisconfigurationException)
         {
         }
+    }
+
+    [TestMethod]
+    public void GetCommitMessage_MultipleCommits_JoinsWithNewLines()
+    {
+        var change = new Change
+        {
+            Commits =
+            [
+                new PushCommit { Message = "Add English locale\n" },
+                new PushCommit { Message = "Update Spanish locale" }
+            ]
+        };
+
+        var result = FilesWebhookList.GetCommitMessage(change);
+
+        Assert.AreEqual($"Add English locale{Environment.NewLine}Update Spanish locale", result);
     }
 }
