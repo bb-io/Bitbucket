@@ -4,11 +4,11 @@ using Blackbird.Applications.Sdk.Common.Webhooks;
 
 namespace Apps.Bitbucket.Webhooks.Handlers;
 
-public class PushEventHandler(
+public class PullRequestCreatedOrUpdatedEventHandler(
     InvocationContext context,
     [WebhookParameter(true)] OptionalWorkspaceIdentifier workspaceIdentifier,
-    [WebhookParameter(true)] OptionalRepositoryIdentifier repositoryIdentifier) 
+    [WebhookParameter(true)] OptionalRepositoryIdentifier repositoryIdentifier)
     : BaseEventHandler(context, workspaceIdentifier.WorkspaceUuid, repositoryIdentifier.RepositoryUuid)
 {
-    protected override IEnumerable<string> EventNames => ["repo:push"];
+    protected override IEnumerable<string> EventNames => ["pullrequest:created", "pullrequest:updated"];
 }
