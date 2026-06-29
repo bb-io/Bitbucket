@@ -11,6 +11,9 @@ public class PullRequestEntity
     [JsonProperty("title")]
     public string Title { get; set; } = string.Empty;
 
+    [JsonProperty("description")]
+    public string? Description { get; set; }
+
     [JsonProperty("state")]
     public string State { get; set; } = string.Empty;
 
@@ -40,6 +43,15 @@ public class PullRequestEntity
 
     [JsonProperty("participants")]
     public IEnumerable<Participant> Participants { get; set; } = [];
+
+    [JsonProperty("source")]
+    public PullRequestBranchReference? Source { get; set; }
+
+    [JsonProperty("destination")]
+    public PullRequestBranchReference? Destination { get; set; }
+
+    [JsonProperty("links")]
+    public PullRequestLinks? Links { get; set; }
 
     [JsonProperty("draft")]
     public bool IsDraft { get; set; }

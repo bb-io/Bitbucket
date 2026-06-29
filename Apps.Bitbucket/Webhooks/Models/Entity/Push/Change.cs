@@ -9,4 +9,7 @@ public class Change
 
     [JsonProperty("old")]
     public ChangeState? Old { get; set; }
+
+    [JsonProperty("commits")]
+    public List<PushCommit> Commits { get; set; } = [];
 }

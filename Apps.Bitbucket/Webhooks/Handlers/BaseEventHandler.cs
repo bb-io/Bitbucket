@@ -15,7 +15,7 @@ public abstract class BaseEventHandler(
     string? repositoryUuid) 
     : BitbucketInvocable(context), IWebhookEventHandler
 {
-    protected abstract string EventName { get; }
+    protected abstract IEnumerable<string> EventNames { get; }
     
     // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-repositories/#api-repositories-workspace-repo-slug-hooks-post
     public async Task SubscribeAsync(IEnumerable<AuthenticationCredentialsProvider> creds, Dictionary<string, string> values)
@@ -25,14 +25,15 @@ public abstract class BaseEventHandler(
         string resolvedWorkspaceUuid = resolver.ResolveWorkspaceUuid(workspaceUuid);
         string resolvedRepositoryUuid = resolver.ResolveRepositoryUuid(repositoryUuid);
         string payloadUrl = values["payloadUrl"];
+        var eventNames = EventNames.ToArray();
 
         var endpoint = $"repositories/{resolvedWorkspaceUuid}/{resolvedRepositoryUuid}/hooks";
         var payload = new
         {
-            description = $"Blackbird {EventName} Webhook",
+            description = $"Blackbird {string.Join(", ", eventNames)} Webhook",
             url = payloadUrl,
             active = true,
-            events = new[] { EventName }
+            events = eventNames
         };
 
         var request = new BitbucketCloudRequest(endpoint, Method.Post).WithJsonBody(payload);

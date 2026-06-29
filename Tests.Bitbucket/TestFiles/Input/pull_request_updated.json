@@ -1,0 +1,260 @@
+{
+    "repository": {
+        "type": "repository",
+        "full_name": "bb-io-demo/feature-branch-demo",
+        "links": {
+            "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo"
+            },
+            "html": {
+                "href": "https://bitbucket.org/bb-io-demo/feature-branch-demo"
+            },
+            "avatar": {
+                "href": "https://bytebucket.org/ravatar/%7B6c4ba8d8-2fc6-4b10-89ee-c26274a11852%7D?ts=js"
+            }
+        },
+        "name": "feature-branch-demo",
+        "scm": "git",
+        "website": null,
+        "owner": {
+            "display_name": "bb-io-demo",
+            "links": {
+                "self": {
+                    "href": "https://api.bitbucket.org/2.0/workspaces/%7B83c14ef0-d1a9-41c3-90ae-0d601a700a22%7D"
+                },
+                "avatar": {
+                    "href": "https://bitbucket.org/account/bb-io-demo/avatar/"
+                },
+                "html": {
+                    "href": "https://bitbucket.org/%7B83c14ef0-d1a9-41c3-90ae-0d601a700a22%7D/"
+                }
+            },
+            "type": "team",
+            "uuid": "{83c14ef0-d1a9-41c3-90ae-0d601a700a22}",
+            "username": "bb-io-demo"
+        },
+        "workspace": {
+            "type": "workspace",
+            "uuid": "{83c14ef0-d1a9-41c3-90ae-0d601a700a22}",
+            "name": "bb-io-demo",
+            "slug": "bb-io-demo",
+            "links": {
+                "avatar": {
+                    "href": "https://bitbucket.org/workspaces/bb-io-demo/avatar/?ts=1782687244"
+                },
+                "html": {
+                    "href": "https://bitbucket.org/bb-io-demo/"
+                },
+                "self": {
+                    "href": "https://api.bitbucket.org/2.0/workspaces/bb-io-demo"
+                }
+            }
+        },
+        "is_private": true,
+        "project": {
+            "type": "project",
+            "key": "DEM",
+            "uuid": "{0ffa8a90-4395-4d08-8937-f17c259b783e}",
+            "name": "Demos",
+            "links": {
+                "self": {
+                    "href": "https://api.bitbucket.org/2.0/workspaces/bb-io-demo/projects/DEM"
+                },
+                "html": {
+                    "href": "https://bitbucket.org/bb-io-demo/workspace/projects/DEM"
+                },
+                "avatar": {
+                    "href": "https://bitbucket.org/bb-io-demo/workspace/projects/DEM/avatar/32?ts=1782687358"
+                }
+            }
+        },
+        "uuid": "{6c4ba8d8-2fc6-4b10-89ee-c26274a11852}",
+        "parent": null
+    },
+    "actor": {
+        "display_name": "Localization Blackbird",
+        "links": {
+            "self": {
+                "href": "https://api.bitbucket.org/2.0/users/%7B56656c51-0181-4996-bf4c-795e98800820%7D"
+            },
+            "avatar": {
+                "href": "https://secure.gravatar.com/avatar/0380397a942b1f257fb7775ea632ba80?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLB-0.png"
+            },
+            "html": {
+                "href": "https://bitbucket.org/%7B56656c51-0181-4996-bf4c-795e98800820%7D/"
+            }
+        },
+        "type": "user",
+        "uuid": "{56656c51-0181-4996-bf4c-795e98800820}",
+        "account_id": "712020:c5fc26ad-7ba6-4251-a7a1-bedfb0f0368b",
+        "nickname": "Localization Blackbird"
+    },
+    "pullrequest": {
+        "comment_count": 0,
+        "task_count": 0,
+        "type": "pullrequest",
+        "id": 1,
+        "title": "Sample PR",
+        "description": "* DM-104 Sample commit\n* DM-102 Sample PR\n\n‌",
+        "rendered": {
+            "title": {
+                "type": "rendered",
+                "raw": "Sample PR",
+                "markup": "markdown",
+                "html": "<p>Sample PR</p>"
+            },
+            "description": {
+                "type": "rendered",
+                "raw": "* DM-104 Sample commit\n* DM-102 Sample PR\n\n‌",
+                "markup": "markdown",
+                "html": "<ul>\n<li>DM-104 Sample commit</li>\n<li>DM-102 Sample PR</li>\n</ul>\n<p>‌</p>"
+            }
+        },
+        "state": "OPEN",
+        "draft": false,
+        "merge_commit": null,
+        "close_source_branch": false,
+        "closed_by": null,
+        "author": {
+            "display_name": "Localization Blackbird",
+            "links": {
+                "self": {
+                    "href": "https://api.bitbucket.org/2.0/users/%7B56656c51-0181-4996-bf4c-795e98800820%7D"
+                },
+                "avatar": {
+                    "href": "https://secure.gravatar.com/avatar/0380397a942b1f257fb7775ea632ba80?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLB-0.png"
+                },
+                "html": {
+                    "href": "https://bitbucket.org/%7B56656c51-0181-4996-bf4c-795e98800820%7D/"
+                }
+            },
+            "type": "user",
+            "uuid": "{56656c51-0181-4996-bf4c-795e98800820}",
+            "account_id": "712020:c5fc26ad-7ba6-4251-a7a1-bedfb0f0368b",
+            "nickname": "Localization Blackbird"
+        },
+        "reason": "",
+        "created_on": "2026-06-29T10:21:49.771546+00:00",
+        "updated_on": "2026-06-29T10:30:20.492095+00:00",
+        "destination": {
+            "branch": {
+                "name": "main"
+            },
+            "commit": {
+                "hash": "b02bcf3c149a",
+                "links": {
+                    "self": {
+                        "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo/commit/b02bcf3c149a"
+                    },
+                    "html": {
+                        "href": "https://bitbucket.org/bb-io-demo/feature-branch-demo/commits/b02bcf3c149a"
+                    }
+                },
+                "type": "commit"
+            },
+            "repository": {
+                "type": "repository",
+                "full_name": "bb-io-demo/feature-branch-demo",
+                "links": {
+                    "self": {
+                        "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo"
+                    },
+                    "html": {
+                        "href": "https://bitbucket.org/bb-io-demo/feature-branch-demo"
+                    },
+                    "avatar": {
+                        "href": "https://bytebucket.org/ravatar/%7B6c4ba8d8-2fc6-4b10-89ee-c26274a11852%7D?ts=js"
+                    }
+                },
+                "name": "feature-branch-demo",
+                "uuid": "{6c4ba8d8-2fc6-4b10-89ee-c26274a11852}"
+            }
+        },
+        "source": {
+            "branch": {
+                "name": "feature/demoing",
+                "links": {},
+                "sync_strategies": [
+                    "merge_commit",
+                    "rebase"
+                ]
+            },
+            "commit": {
+                "hash": "10bea6bc3681",
+                "links": {
+                    "self": {
+                        "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo/commit/10bea6bc3681"
+                    },
+                    "html": {
+                        "href": "https://bitbucket.org/bb-io-demo/feature-branch-demo/commits/10bea6bc3681"
+                    }
+                },
+                "type": "commit"
+            },
+            "repository": {
+                "type": "repository",
+                "full_name": "bb-io-demo/feature-branch-demo",
+                "links": {
+                    "self": {
+                        "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo"
+                    },
+                    "html": {
+                        "href": "https://bitbucket.org/bb-io-demo/feature-branch-demo"
+                    },
+                    "avatar": {
+                        "href": "https://bytebucket.org/ravatar/%7B6c4ba8d8-2fc6-4b10-89ee-c26274a11852%7D?ts=js"
+                    }
+                },
+                "name": "feature-branch-demo",
+                "uuid": "{6c4ba8d8-2fc6-4b10-89ee-c26274a11852}"
+            }
+        },
+        "reviewers": [],
+        "participants": [],
+        "links": {
+            "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo/pullrequests/1"
+            },
+            "html": {
+                "href": "https://bitbucket.org/bb-io-demo/feature-branch-demo/pull-requests/1"
+            },
+            "commits": {
+                "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo/pullrequests/1/commits"
+            },
+            "approve": {
+                "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo/pullrequests/1/approve"
+            },
+            "request-changes": {
+                "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo/pullrequests/1/request-changes"
+            },
+            "diff": {
+                "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo/diff/bb-io-demo/feature-branch-demo:10bea6bc3681%0Db02bcf3c149a?from_pullrequest_id=1&topic=true"
+            },
+            "diffstat": {
+                "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo/diffstat/bb-io-demo/feature-branch-demo:10bea6bc3681%0Db02bcf3c149a?from_pullrequest_id=1&topic=true"
+            },
+            "comments": {
+                "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo/pullrequests/1/comments"
+            },
+            "activity": {
+                "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo/pullrequests/1/activity"
+            },
+            "merge": {
+                "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo/pullrequests/1/merge"
+            },
+            "decline": {
+                "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo/pullrequests/1/decline"
+            },
+            "statuses": {
+                "href": "https://api.bitbucket.org/2.0/repositories/bb-io-demo/feature-branch-demo/pullrequests/1/statuses"
+            }
+        },
+        "summary": {
+            "type": "rendered",
+            "raw": "* DM-104 Sample commit\n* DM-102 Sample PR\n\n‌",
+            "markup": "markdown",
+            "html": "<ul>\n<li>DM-104 Sample commit</li>\n<li>DM-102 Sample PR</li>\n</ul>\n<p>‌</p>"
+        },
+        "queued": false
+    }
+}
