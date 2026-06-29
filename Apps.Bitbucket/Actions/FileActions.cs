@@ -32,9 +32,10 @@ public class FileActions(InvocationContext context, IFileManagementClient fileMa
     {
         string workspaceUuid = _resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
         string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
+        string sourceRef = await branchIdentifier.ResolveSourceRefAsync(Client, workspaceUuid, repositoryUuid);
         
         string endpoint = $"repositories/{workspaceUuid}/{repositoryUuid}" +
-                          $"/src/{branchIdentifier.GetBranchName()}/{filePathIdentifier.FilePath}";
+                          $"/src/{sourceRef}/{filePathIdentifier.FilePath}";
         var request = new BitbucketCloudRequest(endpoint);
 
         var response = await Client.ExecuteWithErrorHandling(request);
@@ -100,9 +101,10 @@ public class FileActions(InvocationContext context, IFileManagementClient fileMa
     {
         string workspaceUuid = _resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
         string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
+        string sourceRef = await branchIdentifier.ResolveSourceRefAsync(Client, workspaceUuid, repositoryUuid);
         
         string endpoint = $"repositories/{workspaceUuid}/{repositoryUuid}" +
-                          $"/src/{branchIdentifier.GetBranchName()}/{filePathIdentifier.FilePath}";
+                          $"/src/{sourceRef}/{filePathIdentifier.FilePath}";
         var request = new BitbucketCloudRequest(endpoint)
             .AddQueryParameter("format", "meta");
 
@@ -152,8 +154,9 @@ public class FileActions(InvocationContext context, IFileManagementClient fileMa
         
         string rawPath = optionalFolderPathIdentifier.FolderPath?.Trim('/') ?? string.Empty;
         string safeFolderPath = string.IsNullOrEmpty(rawPath) ? string.Empty : $"{rawPath}/";
+        string sourceRef = await branchIdentifier.ResolveSourceRefAsync(Client, workspaceUuid, repositoryUuid);
         
-        string baseEndpoint = $"repositories/{workspaceUuid}/{repositoryUuid}/src/{branchIdentifier.GetBranchName()}/";
+        string baseEndpoint = $"repositories/{workspaceUuid}/{repositoryUuid}/src/{sourceRef}/";
         var request = new BitbucketCloudRequest(baseEndpoint + safeFolderPath)
             .AddBitbucketQuery(q =>
             {
