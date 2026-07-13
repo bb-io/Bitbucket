@@ -24,12 +24,14 @@ public class FileActionTests : TestBaseMultipleConnections
         var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = SlashyBranchRepositoryUuid };
         var branchRequest = new OptionalBranchIdentifier { BranchName = SlashyBranchName };
         var filePathRequest = new FilePathIdentifier { FilePath = SlashyBranchFilePath };
+        var downloadRequest = new DownloadFileRequest { };
 
         var result = await actions.DownloadFile(
             workspaceRequest, 
             repositoryRequest, 
             branchRequest,
-            filePathRequest);
+            filePathRequest,
+            downloadRequest);
 
         TestContext?.WriteLine(result.File.Name);
         Assert.IsNotNull(result.File);
