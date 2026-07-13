@@ -1,4 +1,6 @@
 using System.Net;
+using System.Net.Mime;
+using System.Text;
 using Apps.Bitbucket.Api.Request;
 using Apps.Bitbucket.Extensions;
 using Apps.Bitbucket.Helper;
@@ -11,7 +13,7 @@ using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
-using Blackbird.Applications.Sdk.Utils.Extensions.Files;
+using Blackbird.Filters.Transformations;
 using RestSharp;
 
 namespace Apps.Bitbucket.Actions;
@@ -28,26 +30,42 @@ public class FileActions(InvocationContext context, IFileManagementClient fileMa
         [ActionParameter] OptionalWorkspaceIdentifier workspaceIdentifier,
         [ActionParameter] OptionalRepositoryIdentifier repositoryIdentifier,
         [ActionParameter] OptionalBranchIdentifier branchIdentifier,
-        [ActionParameter] FilePathIdentifier filePathIdentifier)
+        [ActionParameter] FilePathIdentifier filePathIdentifier,
+        [ActionParameter] DownloadFileRequest downloadInput)
     {
         string workspaceUuid = _resolver.ResolveWorkspaceUuid(workspaceIdentifier.WorkspaceUuid);
         string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
         string sourceRef = await branchIdentifier.ResolveSourceRefAsync(Client, workspaceUuid, repositoryUuid);
         
-        string endpoint = $"repositories/{workspaceUuid}/{repositoryUuid}" +
-                          $"/src/{sourceRef}/{filePathIdentifier.FilePath}";
+        string endpoint = $"repositories/{workspaceUuid}/{repositoryUuid}/src/{sourceRef}/{filePathIdentifier.FilePath}";
         var request = new BitbucketCloudRequest(endpoint);
 
         var response = await Client.ExecuteWithErrorHandling(request);
         using var stream = new MemoryStream(response.RawBytes ?? []);
-        var fileReference = await fileManagementClient.UploadAsync(
-            stream,
-            response.ContentType ?? "application/octet-stream",
-            response.GetFilenameFromDispositionHeader(filePathIdentifier.FilePath));
 
+        string fileName = response.GetFilenameFromDispositionHeader(filePathIdentifier.FilePath);
+        if (!MimeTypes.TryGetMimeType(fileName, out var mimeType))
+            mimeType = MediaTypeNames.Application.Octet;
+        
+        var fileResult = Transformation.Load(stream, fileName, mimeType).Source();
+        if (!fileResult.Success)
+        {
+            var directFileReference = await fileManagementClient.UploadAsync(stream, mimeType, fileName);
+            InvocationContext.Logger?.LogInformation($"Not a Blackbird interoperable file: {fileResult.Error}", []);
+            return new(directFileReference);
+        }
+
+        var fileContent = fileResult.Value;
+        string branchName = branchIdentifier.GetBranchName();
+        
+        fileContent.Language = downloadInput.SourceLanguage;
+        fileContent.SystemReference.ContentId = downloadInput.ContentId;
+        fileContent.SystemReference.AddMetadata(workspaceUuid, repositoryUuid, branchName, filePathIdentifier.FilePath, fileName);
+       
+        var fileReference = await fileManagementClient.UploadAsync(fileContent.ToStream(), mimeType, fileName);
         return new(fileReference);
     }
-
+    
     [Action("Download repository as zip", Description = "Download repository content as a zip file")]
     public async Task<FileReferenceResponse> DownloadRepositoryZip(
         [ActionParameter] OptionalWorkspaceIdentifier workspaceIdentifier,
@@ -114,7 +132,7 @@ public class FileActions(InvocationContext context, IFileManagementClient fileMa
 
     // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-source/#api-repositories-workspace-repo-slug-src-post
     [Action("Upload file", Description = "Commit file upload. Overwrites existing file")]
-    public async Task UploadFile(
+    public async Task<FileReferenceResponse> UploadFile(
         [ActionParameter] OptionalWorkspaceIdentifier workspaceIdentifier,
         [ActionParameter] OptionalRepositoryIdentifier repositoryIdentifier,
         [ActionParameter] OptionalBranchIdentifier branchIdentifier,
@@ -125,8 +143,10 @@ public class FileActions(InvocationContext context, IFileManagementClient fileMa
         string repositoryUuid = _resolver.ResolveRepositoryUuid(repositoryIdentifier.RepositoryUuid);
         
         var file = await fileManagementClient.DownloadAsync(uploadInput.File);
-        var fileBytes = await file.GetByteData();
+        var transformationResult = Transformation.Load(file, uploadInput.File.Name, uploadInput.File.ContentType);
+        string content = transformationResult.ReadContent(file, InvocationContext.Logger);
         
+        var fileBytes = Encoding.UTF8.GetBytes(content);
         string fileName = uploadInput.FileName ?? uploadInput.File.Name;
         string? folderPath = optionalFolderPathIdentifier.FolderPath;
         string targetFilePath = string.IsNullOrEmpty(folderPath) ? fileName : $"{folderPath}/{fileName}";
@@ -138,8 +158,20 @@ public class FileActions(InvocationContext context, IFileManagementClient fileMa
             .AddFile(targetFilePath, fileBytes, fileName, uploadInput.File.ContentType);
 
         await Client.ExecuteWithErrorHandling(request);
-    }
+        
+        if (!transformationResult.Success) 
+            return new(uploadInput.File);
+        
+        string branchName = branchIdentifier.GetBranchName();
+        
+        var transformation = transformationResult.Value;
+        transformation.TargetSystemReference.AddMetadata(workspaceUuid, repositoryUuid, branchName, targetFilePath, fileName);
 
+        var fileData = transformationResult.ToResultFile();
+        var uploadedFile = await fileManagementClient.UploadAsync(fileData.Stream, fileData.MediaType, fileData.FileName);
+        return new(uploadedFile);
+    }
+    
     // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-source/#api-repositories-workspace-repo-slug-src-commit-path-get
     [Action("Search files in folder", Description = "Search files in a folder")]
     public async Task<SearchFilesResponse> SearchFiles(
