@@ -10,6 +10,7 @@ using Apps.Bitbucket.Webhooks.Handlers;
 using Apps.Bitbucket.Webhooks.Helpers;
 using Apps.Bitbucket.Webhooks.Models.Entity.Push;
 using Apps.Bitbucket.Webhooks.Models.Payloads.Push;
+using Apps.Bitbucket.Webhooks.Models.Request.File;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.Sdk.Common.Webhooks;
 
@@ -45,7 +46,8 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
         [WebhookParameter(true)] OptionalWorkspaceIdentifier workspaceIdentifier,
         [WebhookParameter(true)] OptionalRepositoryIdentifier repositoryIdentifier,
         [WebhookParameter] OptionalBranchIdentifier branchIdentifier,
-        [WebhookParameter] OptionalFilepath filepath)
+        [WebhookParameter] OptionalFilepath filepath,
+        [WebhookParameter] OnFilesAddedOrModifiedRequest input)
     {
         return await ProcessFileWebhook(
             webhookRequest, 
@@ -53,7 +55,8 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
             repositoryIdentifier.RepositoryUuid,
             branchIdentifier,
             filepath,
-            ["added", "modified"]);
+            ["added", "modified"],
+            input.FileExtensions);
     }
     
     [Webhook("On files modified", typeof(PushEventHandler), 
@@ -98,7 +101,8 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
         string? repositoryIdentifier,
         OptionalBranchIdentifier branchIdentifier,
         OptionalFilepath filepath,
-        List<string> fileStatuses)
+        List<string> fileStatuses,
+        List<string>? fileExtensions = null)
     {
         var payload = webhookRequest.GetPayload<PushPayload>();
         
@@ -128,6 +132,18 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
             filepath?.FilePathPatterns,
             actualBranchName,
             commitMessage);
+
+        if (fileExtensions is not null)
+        {
+            var normalizedExtensions = fileExtensions
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.StartsWith('.') ? x : $".{x}")
+                .ToList();
+
+            targetFiles = targetFiles
+                .Where(file => normalizedExtensions.Any(ext => file.Path.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+        }
     
         if (targetFiles.Count == 0)
             return await Preflight<SearchFileWebhookResponse>();
