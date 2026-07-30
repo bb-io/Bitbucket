@@ -1,6 +1,7 @@
 using Apps.Bitbucket.Constants;
 using Apps.Bitbucket.Models.Identifiers.Optional;
 using Apps.Bitbucket.Webhooks;
+using Apps.Bitbucket.Webhooks.Models.Request.File;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.Sdk.Common.Webhooks;
 using Tests.Bitbucket.Base;
@@ -20,9 +21,16 @@ public class WebhookTests : TestBaseMultipleConnections
         var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{6c4ba8d8-2fc6-4b10-89ee-c26274a11852}" };
         var branchRequest = new OptionalBranchIdentifier { BranchNameContains = ["feature/"] };
         var filepath = new OptionalFilepath() { FilePathPatterns = ["locales/([a-zA-z]{2}-[a-zA-z]{2}).json"] };
+        var input = new OnFilesAddedOrModifiedRequest { FileExtensions = [""] };
         
         // Act
-        var result = await webhookList.OnFilesAddedOrModified(webhookRequest, workspaceRequest, repositoryRequest, branchRequest, filepath);
+        var result = await webhookList.OnFilesAddedOrModified(
+            webhookRequest,
+            workspaceRequest, 
+            repositoryRequest,
+            branchRequest, 
+            filepath,
+            input);
 
         // Assert
         PrintResult(result);
@@ -40,10 +48,17 @@ public class WebhookTests : TestBaseMultipleConnections
         var repositoryRequest = new OptionalRepositoryIdentifier { RepositoryUuid = "{6c4ba8d8-2fc6-4b10-89ee-c26274a11852}" };
         var branchRequest = new OptionalBranchIdentifier { BranchNameContains = ["feature/"] };
         var filepath = new OptionalFilepath() { FilePathPatterns = ["locales/en-US.json"] };
+        var input = new OnFilesAddedOrModifiedRequest { FileExtensions = [""] };
 
         // Act
-        var result = await webhookList.OnFilesAddedOrModified(webhookRequest, workspaceRequest, repositoryRequest, branchRequest, filepath);
-
+        var result = await webhookList.OnFilesAddedOrModified(
+            webhookRequest,
+            workspaceRequest, 
+            repositoryRequest,
+            branchRequest, 
+            filepath,
+            input);
+        
         // Assert
         PrintResult(result);
         Assert.IsNotNull(result.Result, "The result is null");
