@@ -137,7 +137,9 @@ public class FilesWebhookList(InvocationContext context) : BitbucketInvocable(co
         {
             var normalizedExtensions = fileExtensions
                 .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.Trim())
                 .Select(x => x.StartsWith('.') ? x : $".{x}")
+                .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
             targetFiles = targetFiles
