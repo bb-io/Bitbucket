@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <Product>Bitbucket Cloud [Beta]</Product>
         <Description>Bitbucket is a cloud-based Git repository hosting service owned by Atlassian that helps developers store and manage their code.</Description>
-        <Version>1.0.5</Version>
+        <Version>1.0.6</Version>
         <AssemblyName>Apps.Bitbucket</AssemblyName>
     </PropertyGroup>
 
@@ -23,12 +23,7 @@
 
     <ItemGroup>
         <EmbeddedResource CopyToOutputDirectory="Always" Include="image\icon.png" />
-    </ItemGroup>
-    
-    <ItemGroup>
-        <EmbeddedResource Include="..\README.md">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </EmbeddedResource>
+        <EmbeddedResource CopyToOutputDirectory="Always" Include="..\README.md"/>
     </ItemGroup>
 
 </Project>
