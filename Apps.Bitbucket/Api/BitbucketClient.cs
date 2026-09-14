@@ -71,10 +71,10 @@ public class BitbucketClient(IEnumerable<AuthenticationCredentialsProvider> cred
             return new PluginApplicationException($"{statusCodePart} Couldn't parse error as JSON. Raw truncated: {truncatedContent}");
         }
         
-        var errorObject = error?.Error;
+        ErrorBody errorObject = error.Error;
+        string errorMessage = errorObject.Message;
         
-        string errorMessage = errorObject?.Message ?? "Unknown error. ";
-        if (errorObject?.Detail == null) 
+        if (errorObject.Detail == null) 
             return new PluginApplicationException($"{statusCodePart} {errorMessage}");
         
         string detailString = errorObject.Detail.Type == JTokenType.String
