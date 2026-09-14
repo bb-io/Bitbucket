@@ -58,18 +58,24 @@ public class BitbucketClient(IEnumerable<AuthenticationCredentialsProvider> cred
         string statusCodePart = $"Status code {(int)response.StatusCode} ({response.StatusCode}).";
 
         if (!string.IsNullOrWhiteSpace(response.ErrorMessage))
-            throw new PluginApplicationException(response.ErrorMessage);
+            return new PluginApplicationException(response.ErrorMessage);
         
-        string responseContent = !string.IsNullOrWhiteSpace(response.Content)
-            ? response.Content
-            : throw new PluginApplicationException($"{statusCodePart} The server did not return any content.");
+        string? responseContent = response.Content;
+        if (string.IsNullOrWhiteSpace(responseContent))
+            return new PluginApplicationException($"{statusCodePart} The server did not return any content.");
         
-        var error = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+        ErrorResponse? error = TryDeserializeError(responseContent);
+        if (error is null)
+        {
+            string truncatedContent = responseContent[..200];
+            return new PluginApplicationException($"{statusCodePart} Couldn't parse error as JSON. Raw truncated: {truncatedContent}");
+        }
+        
         var errorObject = error?.Error;
         
         string errorMessage = errorObject?.Message ?? "Unknown error. ";
         if (errorObject?.Detail == null) 
-            throw new PluginApplicationException($"{statusCodePart} {errorMessage}");
+            return new PluginApplicationException($"{statusCodePart} {errorMessage}");
         
         string detailString = errorObject.Detail.Type == JTokenType.String
             ? errorObject.Detail.ToString()
@@ -78,6 +84,21 @@ public class BitbucketClient(IEnumerable<AuthenticationCredentialsProvider> cred
         if (!string.IsNullOrWhiteSpace(detailString))
             errorMessage = $"{errorMessage} {detailString}";
 
-        throw new PluginApplicationException($"{statusCodePart} {errorMessage}");
+        return new PluginApplicationException($"{statusCodePart} {errorMessage}");
+    }
+
+    private static ErrorResponse? TryDeserializeError(string responseContent)
+    {
+        if (string.IsNullOrWhiteSpace(responseContent))
+            return null;
+        
+        try
+        {
+            return JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
     }
 }
